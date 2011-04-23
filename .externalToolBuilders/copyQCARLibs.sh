@@ -15,8 +15,8 @@ mkdir armeabi-v7a
 fi
 
 cd ..
-cp ../../build/lib/armeabi/libQCAR.so libs/armeabi/
-cp ../../build/lib/armeabi-v7a/libQCAR.so libs/armeabi-v7a/
+cp ${QCAR_SDK_ROOT}/build/lib/armeabi/libQCAR.so libs/armeabi/
+cp ${QCAR_SDK_ROOT}/build/lib/armeabi-v7a/libQCAR.so libs/armeabi-v7a/
 
 if [ ! -e libs/armeabi/libQCAR.so ] || [ ! -e libs/armeabi-v7a/libQCAR.so ]; then
 echo ========================================================================

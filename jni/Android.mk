@@ -38,7 +38,7 @@ TARGET_PLATFORM := android-5
 # all sources (C, C++ and Assembly). These are placed before any
 # corresponding inclusion flag in LOCAL_CFLAGS / LOCAL_CPPFLAGS.
 
-LOCAL_C_INCLUDES := $(LOCAL_PATH)/../../../build/include
+LOCAL_C_INCLUDES := $(QCAR_SDK_ROOT)/build/include
 
 # This sample always uses OpenGL ES 2.0.
 OPENGLES_LIB  := -lGLESv2
@@ -57,7 +57,7 @@ LOCAL_CFLAGS := -Wno-write-strings $(OPENGLES_DEF)
 # with the "-l" prefix.
 
 # The following resolves cygwin paths problem caused by the ndk-r5
-QCAR_LOCAL_PATH := $(LOCAL_PATH)/../../../build/lib/$(TARGET_ARCH_ABI)
+QCAR_LOCAL_PATH := $(QCAR_SDK_ROOT)/build/lib/$(TARGET_ARCH_ABI)
 
 LOCAL_LDLIBS := \
     -L$(QCAR_LOCAL_PATH) \
