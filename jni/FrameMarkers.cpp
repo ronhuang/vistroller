@@ -2,8 +2,8 @@
             Copyright (c) 2010 QUALCOMM Incorporated.
             All Rights Reserved.
             Qualcomm Confidential and Proprietary
-            
-@file 
+
+@file
     FrameMarkers.cpp
 
 @brief
@@ -81,8 +81,8 @@ JNIEXPORT void JNICALL
 Java_com_qualcomm_QCARSamples_FrameMarkers_FrameMarkersRenderer_renderFrame(JNIEnv *, jobject)
 {
     //LOG("Java_com_qualcomm_QCARSamples_FrameMarkers_GLRenderer_renderFrame");
- 
-    // Clear color and depth buffer 
+
+    // Clear color and depth buffer
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     // Render video background:
@@ -97,17 +97,17 @@ Java_com_qualcomm_QCARSamples_FrameMarkers_FrameMarkersRenderer_renderFrame(JNIE
         // Get the trackable:
         const QCAR::Trackable* trackable = state.getActiveTrackable(tIdx);
         QCAR::Matrix44F modelViewMatrix =
-            QCAR::Tool::convertPose2GLMatrix(trackable->getPose());        
-      
+            QCAR::Tool::convertPose2GLMatrix(trackable->getPose());
+
         // Choose the texture based on the target name:
         int textureIndex = 0;
-        
+
         // Check the type of the trackable:
         assert(trackable->getType() == QCAR::Trackable::MARKER);
         const QCAR::Marker* marker = static_cast<const QCAR::Marker*>(trackable);
 
         textureIndex = marker->getMarkerId();
-        
+
         assert(textureIndex < textureCount);
         const Texture* const thisTexture = textures[textureIndex];
 
@@ -163,7 +163,7 @@ Java_com_qualcomm_QCARSamples_FrameMarkers_FrameMarkersRenderer_renderFrame(JNIE
                                     &modelViewProjection.data[0]);
 
         glUseProgram(shaderProgramID);
- 
+
         glVertexAttribPointer(vertexHandle, 3, GL_FLOAT, GL_FALSE, 0, vertices);
         glVertexAttribPointer(normalHandle, 3, GL_FLOAT, GL_FALSE, 0, normals);
         glVertexAttribPointer(textureCoordHandle, 2, GL_FLOAT, GL_FALSE,
@@ -205,7 +205,7 @@ configureVideoBackground()
     config.mSynchronous = true;
     config.mPosition.data[0] = 0.0f;
     config.mPosition.data[1] = 0.0f;
-    
+
     if (isActivityInPortraitMode)
     {
         //LOG("configureVideoBackground PORTRAIT");
@@ -231,11 +231,11 @@ Java_com_qualcomm_QCARSamples_FrameMarkers_FrameMarkers_initApplicationNative(
                             JNIEnv* env, jobject obj, jint width, jint height)
 {
     LOG("Java_com_qualcomm_QCARSamples_FrameMarkers_FrameMarkers_initApplicationNative");
-    
+
     // Store screen dimensions
     screenWidth = width;
     screenHeight = height;
-        
+
     // Handle to the activity class:
     jclass activityClass = env->GetObjectClass(obj);
 
@@ -247,7 +247,7 @@ Java_com_qualcomm_QCARSamples_FrameMarkers_FrameMarkers_initApplicationNative(
         return;
     }
 
-    textureCount = (int) env->CallObjectMethod(obj, getTextureCountMethodID);    
+    textureCount = (int) env->CallObjectMethod(obj, getTextureCountMethodID);
     if (!textureCount)
     {
         LOG("getTextureCount() returned zero.");
@@ -269,7 +269,7 @@ Java_com_qualcomm_QCARSamples_FrameMarkers_FrameMarkers_initApplicationNative(
     for (int i = 0; i < textureCount; ++i)
     {
 
-        jobject textureObject = env->CallObjectMethod(obj, getTextureMethodID, i); 
+        jobject textureObject = env->CallObjectMethod(obj, getTextureMethodID, i);
         if (textureObject == NULL)
         {
             LOG("GetTexture() returned zero pointer");
@@ -289,16 +289,16 @@ Java_com_qualcomm_QCARSamples_FrameMarkers_FrameMarkers_deinitApplicationNative(
 
     // Release texture resources
     if (textures != 0)
-    {    
+    {
         for (int i = 0; i < textureCount; ++i)
         {
             delete textures[i];
             textures[i] = NULL;
         }
-    
+
         delete[]textures;
         textures = NULL;
-        
+
         textureCount = 0;
     }
 }
@@ -328,7 +328,7 @@ Java_com_qualcomm_QCARSamples_FrameMarkers_FrameMarkers_startCamera(JNIEnv *,
 
     // Start the tracker:
     QCAR::Tracker::getInstance().start();
-    
+
     // Cache the projection matrix:
     const QCAR::Tracker& tracker = QCAR::Tracker::getInstance();
     const QCAR::CameraCalibration& cameraCalibration =
@@ -359,7 +359,7 @@ Java_com_qualcomm_QCARSamples_FrameMarkers_FrameMarkersRenderer_initRendering(
 
     // Define clear color
     glClearColor(0.0f, 0.0f, 0.0f, QCAR::requiresAlpha() ? 0.0f : 1.0f);
-    
+
     // Now generate the OpenGL texture objects and add settings
     for (int i = 0; i < textureCount; ++i)
     {
@@ -371,7 +371,7 @@ Java_com_qualcomm_QCARSamples_FrameMarkers_FrameMarkersRenderer_initRendering(
                 textures[i]->mHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE,
                 (GLvoid*)  textures[i]->mData);
     }
-  
+
     shaderProgramID     = SampleUtils::createProgramFromBuffer(cubeMeshVertexShader,
                                                             cubeFragmentShader);
 
@@ -392,7 +392,7 @@ Java_com_qualcomm_QCARSamples_FrameMarkers_FrameMarkersRenderer_updateRendering(
                         JNIEnv* env, jobject obj, jint width, jint height)
 {
     LOG("Java_com_qualcomm_QCARSamples_FrameMarkers_FrameMarkersRenderer_updateRendering");
-    
+
     // Update screen dimensions
     screenWidth = width;
     screenHeight = height;

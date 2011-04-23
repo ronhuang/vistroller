@@ -2,8 +2,8 @@
             Copyright (c) 2010 QUALCOMM Incorporated.
             All Rights Reserved.
             Qualcomm Confidential and Proprietary
-            
-@file 
+
+@file
     FrameMarkers.java
 
 @brief
@@ -44,62 +44,62 @@ public class FrameMarkers extends Activity
     private static final int APPSTATUS_INITED           = 4;
     private static final int APPSTATUS_CAMERA_STOPPED   = 5;
     private static final int APPSTATUS_CAMERA_RUNNING   = 6;
-    
+
     // Name of the native dynamic libraries to load:
-    private static final String NATIVE_LIB_SAMPLE = "FrameMarkers";    
-    private static final String NATIVE_LIB_QCAR = "QCAR"; 
+    private static final String NATIVE_LIB_SAMPLE = "FrameMarkers";
+    private static final String NATIVE_LIB_QCAR = "QCAR";
 
     // Our OpenGL view:
     private QCARSampleGLView mGlView;
-    
+
     // The view to display the sample splash screen:
     private ImageView mSplashScreenView;
-    
+
     // The minimum time the splash screen should be visible:
-    private static final long MIN_SPLASH_SCREEN_TIME = 2000;    
-    
+    private static final long MIN_SPLASH_SCREEN_TIME = 2000;
+
     // The time when the splash screen has become visible:
     long mSplashScreenStartTime = 0;
-    
+
     // Our renderer:
     private FrameMarkersRenderer mRenderer;
-    
+
     // Display size of the device
     private int mScreenWidth = 0;
     private int mScreenHeight = 0;
-    
+
     // The current application status
     private int mAppStatus = APPSTATUS_UNINITED;
-    
-    // The async tasks to initialize the QCAR SDK 
+
+    // The async tasks to initialize the QCAR SDK
     private InitQCARTask mInitQCARTask;
     private LoadTrackerTask mLoadTrackerTask;
 
     // QCAR initialization flags
     private int mQCARFlags = 0;
-    
+
     // The textures we will use for rendering:
     private Vector<Texture> mTextures;
     private int mSplashScreenImageResource = 0;
-    
+
     /** Static initializer block to load native libraries on start-up. */
     static
     {
         loadLibrary(NATIVE_LIB_QCAR);
         loadLibrary(NATIVE_LIB_SAMPLE);
     }
-    
-    
+
+
     /** An async task to initialize QCAR asynchronously. */
     private class InitQCARTask extends AsyncTask<Void, Integer, Boolean>
-    {   
+    {
         // Initialize with invalid value
         private int mProgressValue = -1;
-        
+
         protected Boolean doInBackground(Void... params)
         {
             QCAR.setInitParameters(FrameMarkers.this, mQCARFlags);
-            
+
             do
             {
                 // QCAR.init() blocks until an initialization step is complete,
@@ -108,28 +108,28 @@ public class FrameMarkers extends Activity
                 // If QCAR.init() returns -1, it indicates an error.
                 // Initialization is done when progress has reached 100%.
                 mProgressValue = QCAR.init();
-                
+
                 // Publish the progress value:
                 publishProgress(mProgressValue);
-                
+
                 // We check whether the task has been canceled in the meantime
                 // (by calling AsyncTask.cancel(true))
                 // and bail out if it has, thus stopping this thread.
                 // This is necessary as the AsyncTask will run to completion
                 // regardless of the status of the component that started is.
             } while (!isCancelled() && mProgressValue >= 0 && mProgressValue < 100);
-            
+
             return (mProgressValue > 0);
         }
 
-        
+
         protected void onProgressUpdate(Integer... values)
         {
             // Do something with the progress value "values[0]", e.g. update
             // splash screen, progress bar, etc.
         }
 
-        
+
         protected void onPostExecute(Boolean result)
         {
             // Done initializing QCAR, proceed to next application
@@ -155,8 +155,8 @@ public class FrameMarkers extends Activity
                             System.exit(1);
             			}
             		}
-            	); 
-            	
+            	);
+
             	String logMessage;
 
                 // NOTE: Check if initialization failed because the device is
@@ -170,7 +170,7 @@ public class FrameMarkers extends Activity
                 else if (mProgressValue ==
                             QCAR.INIT_CANNOT_DOWNLOAD_DEVICE_SETTINGS)
                 {
-                	logMessage = 
+                	logMessage =
                         "Network connection required to initialize camera " +
                         "settings. Please check your connection and restart " +
                         "the application. If you are still experiencing " +
@@ -181,19 +181,19 @@ public class FrameMarkers extends Activity
                 {
                 	logMessage = "Failed to initialize QCAR.";
                 }
-                
+
                 // Log error:
                 DebugLog.LOGE("InitQCARTask::onPostExecute: " + logMessage +
                                 " Exiting.");
-                
+
                 // Show dialog box with error message:
-                dialogError.setMessage(logMessage);  
+                dialogError.setMessage(logMessage);
                 dialogError.show();
             }
         }
     }
-    
-    
+
+
     /** An async task to load the tracker data asynchronously. */
     private class LoadTrackerTask extends AsyncTask<Void, Integer, Boolean>
     {
@@ -206,54 +206,54 @@ public class FrameMarkers extends Activity
             {
                 progressValue = QCAR.load();
                 publishProgress(progressValue);
-                
+
             } while (!isCancelled() && progressValue >= 0 &&
                         progressValue < 100);
-            
+
             return (progressValue > 0);
         }
-        
-        
+
+
         protected void onProgressUpdate(Integer... values)
         {
             // Do something with the progress value "values[0]", e.g. update
             // splash screen, progress bar, etc.
         }
-        
-        
+
+
         protected void onPostExecute(Boolean result)
         {
             DebugLog.LOGD("LoadTrackerTask::onPostExecute: execution " +
                         (result ? "successful" : "failed"));
 
-            // Done loading the tracker, update application status: 
+            // Done loading the tracker, update application status:
             updateApplicationStatus(APPSTATUS_INITED);
         }
     }
 
-    
+
     /** Called when the activity first starts or the user navigates back
      * to an activity. */
     protected void onCreate(Bundle savedInstanceState)
     {
         DebugLog.LOGD("FrameMarkers::onCreate");
         super.onCreate(savedInstanceState);
-        
+
         // Set the splash screen image to display during initialization:
         mSplashScreenImageResource = R.drawable.splash_screen_frame_markers;
-        
-        // Load any sample specific textures:  
+
+        // Load any sample specific textures:
         mTextures = new Vector<Texture>();
         loadTextures();
-        
+
         // Query the QCAR initialization flags:
         mQCARFlags = getInitializationFlags();
-        
+
         // Update the application status to start initializing application
         updateApplicationStatus(APPSTATUS_INIT_APP);
     }
 
-    
+
     /** We want to load specific textures from the APK, which we will later
     use for rendering. */
     private void loadTextures()
@@ -263,16 +263,16 @@ public class FrameMarkers extends Activity
         mTextures.add(Texture.loadTextureFromApk("letter_A.png", getAssets()));
         mTextures.add(Texture.loadTextureFromApk("letter_R.png", getAssets()));
     }
-    
-    
+
+
     /** Configure QCAR with the desired version of OpenGL ES. */
     private int getInitializationFlags()
     {
         return QCAR.GL_20;
-    }    
-    
-    
-    /** Native methods for starting and stoping the camera. */ 
+    }
+
+
+    /** Native methods for starting and stoping the camera. */
     private native void startCamera();
     private native void stopCamera();
 
@@ -282,56 +282,56 @@ public class FrameMarkers extends Activity
     {
         DebugLog.LOGD("FrameMarkers::onResume");
         super.onResume();
-        
+
         // QCAR-specific resume operation
         QCAR.onResume();
-        
-        // We may start the camera only if the QCAR SDK has already been 
+
+        // We may start the camera only if the QCAR SDK has already been
         // initialized
         if (mAppStatus == APPSTATUS_CAMERA_STOPPED)
             updateApplicationStatus(APPSTATUS_CAMERA_RUNNING);
-        
+
         // Resume the GL view:
         if (mGlView != null)
         {
             mGlView.setVisibility(View.VISIBLE);
             mGlView.onResume();
-        }        
+        }
     }
-    
+
 
     /** Called when the system is about to start resuming a previous activity.*/
     protected void onPause()
     {
         DebugLog.LOGD("FrameMarkers::onPause");
         super.onPause();
-        
+
         if (mGlView != null)
         {
             mGlView.setVisibility(View.INVISIBLE);
             mGlView.onPause();
         }
-        
+
         // QCAR-specific pause operation
         QCAR.onPause();
-        
+
         if (mAppStatus == APPSTATUS_CAMERA_RUNNING)
         {
             updateApplicationStatus(APPSTATUS_CAMERA_STOPPED);
         }
     }
-    
-    
+
+
     /** Native function to deinitialize the application.*/
     private native void deinitApplicationNative();
 
-    
+
     /** The final call you receive before your activity is destroyed.*/
     protected void onDestroy()
     {
         DebugLog.LOGD("FrameMarkers::onDestroy");
         super.onDestroy();
-        
+
         // Cancel potentially running tasks
         if (mInitQCARTask != null &&
             mInitQCARTask.getStatus() != InitQCARTask.Status.FINISHED)
@@ -339,28 +339,28 @@ public class FrameMarkers extends Activity
             mInitQCARTask.cancel(true);
             mInitQCARTask = null;
         }
-        
+
         if (mLoadTrackerTask != null &&
             mLoadTrackerTask.getStatus() != LoadTrackerTask.Status.FINISHED)
         {
             mLoadTrackerTask.cancel(true);
             mLoadTrackerTask = null;
         }
-        
+
         // Do application deinitialization in native code
         deinitApplicationNative();
-        
+
         // Unload texture
         mTextures.clear();
         mTextures = null;
-        
+
         // Deinitialize QCAR SDK
         QCAR.deinit();
-        
+
         System.gc();
     }
 
-    
+
     /** NOTE: this method is synchronized because of a potential concurrent
      * access by FrameMarkers::onResume() and InitQCARTask::onPostExecute(). */
     private synchronized void updateApplicationStatus(int appStatus)
@@ -369,7 +369,7 @@ public class FrameMarkers extends Activity
         if (mAppStatus == appStatus)
             return;
 
-        // Store new status value      
+        // Store new status value
         mAppStatus = appStatus;
 
         // Execute application state-specific actions
@@ -377,9 +377,9 @@ public class FrameMarkers extends Activity
         {
             case APPSTATUS_INIT_APP:
                 // Initialize application elements that do not rely on QCAR
-                // initialization  
+                // initialization
                 initApplication();
-                
+
                 // Proceed to next application initialization status
                 updateApplicationStatus(APPSTATUS_INIT_QCAR);
                 break;
@@ -399,17 +399,17 @@ public class FrameMarkers extends Activity
                     DebugLog.LOGE("Initializing QCAR SDK failed");
                 }
                 break;
-                
+
             case APPSTATUS_INIT_APP_AR:
                 // Initialize Augmented Reality-specific application elements
                 // that may rely on the fact that the QCAR SDK has been
                 // already initialized
                 initApplicationAR();
-                
+
                 // Proceed to next application initialization status
                 updateApplicationStatus(APPSTATUS_INIT_TRACKER);
                 break;
-                
+
             case APPSTATUS_INIT_TRACKER:
                 // Load the tracking data set
                 //
@@ -425,7 +425,7 @@ public class FrameMarkers extends Activity
                     DebugLog.LOGE("Loading tracking data set failed");
                 }
                 break;
-                
+
             case APPSTATUS_INITED:
                 // Hint to the virtual machine that it would be a good time to
                 // run the garbage collector.
@@ -433,17 +433,17 @@ public class FrameMarkers extends Activity
                 // NOTE: This is only a hint. There is no guarantee that the
                 // garbage collector will actually be run.
                 System.gc();
-                
+
                 // The elapsed time since the splash screen was visible:
-                long splashScreenTime = System.currentTimeMillis() - 
+                long splashScreenTime = System.currentTimeMillis() -
                                             mSplashScreenStartTime;
                 long newSplashScreenTime = 0;
                 if (splashScreenTime < MIN_SPLASH_SCREEN_TIME)
                 {
                     newSplashScreenTime = MIN_SPLASH_SCREEN_TIME -
-                                            splashScreenTime;   
+                                            splashScreenTime;
                 }
-                
+
                 // Request a callback function after a given timeout to dismiss
                 // the splash screen:
                 Handler handler = new Handler();
@@ -453,7 +453,7 @@ public class FrameMarkers extends Activity
                         {
                             // Hide the splash screen
                             mSplashScreenView.setVisibility(View.INVISIBLE);
-                            
+
                             // Activate the renderer
                             mRenderer.mIsActive = true;
 
@@ -464,35 +464,35 @@ public class FrameMarkers extends Activity
                             addContentView(mGlView, new LayoutParams(
                                             LayoutParams.FILL_PARENT,
                                             LayoutParams.FILL_PARENT));
-                            
+
                             // Start the camera:
                             updateApplicationStatus(APPSTATUS_CAMERA_RUNNING);
                         }
                     }
-                    , newSplashScreenTime);                
-        
+                    , newSplashScreenTime);
+
                 break;
-                
+
             case APPSTATUS_CAMERA_STOPPED:
                 // Call the native function to stop the camera
                 stopCamera();
                 break;
-                
+
             case APPSTATUS_CAMERA_RUNNING:
                 // Call the native function to start the camera
-                startCamera(); 
+                startCamera();
                 break;
-                
+
             default:
                 throw new RuntimeException("Invalid application state");
         }
     }
-    
-    
+
+
     /** Tells native code whether we are in portait or landscape mode */
     private native void setActivityPortraitMode(boolean isPortrait);
-    
-    
+
+
     /** Initialize application GUI elements that are not related to AR. */
     private void initApplication()
     {
@@ -501,32 +501,32 @@ public class FrameMarkers extends Activity
         // NOTE: It is recommended to set this because of the following reasons:
         //
         //    1.) Before Android 2.2 there is no reliable way to query the
-        //        absolute screen orientation from an activity, therefore using 
-        //        an undefined orientation is not recommended. Screen 
+        //        absolute screen orientation from an activity, therefore using
+        //        an undefined orientation is not recommended. Screen
         //        orientation matching orientation sensor measurements is also
         //        not recommended as every screen orientation change triggers
-        //        deinitialization / (re)initialization steps in internal QCAR 
-        //        SDK components resulting in unnecessary overhead during 
+        //        deinitialization / (re)initialization steps in internal QCAR
+        //        SDK components resulting in unnecessary overhead during
         //        application run-time.
         //
         //    2.) Android camera drivers seem to always deliver landscape images
-        //        thus QCAR SDK components (e.g. camera capturing) need to know 
-        //        when we are in portrait mode. Before Android 2.2 there is no 
-        //        standard, device-independent way to let the camera driver know 
+        //        thus QCAR SDK components (e.g. camera capturing) need to know
+        //        when we are in portrait mode. Before Android 2.2 there is no
+        //        standard, device-independent way to let the camera driver know
         //        that we are in portrait mode as each device seems to require a
-        //        different combination of settings to rotate camera preview 
+        //        different combination of settings to rotate camera preview
         //        frames images to match portrait mode views. Because of this,
         //        we suggest that the activity using the QCAR SDK be locked
         //        to landscape mode if you plan to support Android 2.1 devices
         //        as well. Froyo is fine with both orientations.
     	int screenOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
-        
+
     	// Apply screen orientation
     	setRequestedOrientation(screenOrientation);
-    	
+
     	// Pass on screen orientation info to native code
         setActivityPortraitMode(screenOrientation == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-        
+
         // Query display dimensions
         DisplayMetrics metrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(metrics);
@@ -538,25 +538,25 @@ public class FrameMarkers extends Activity
         getWindow().setFlags(
             WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON,
             WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-              
+
         // Create and add the splash screen view
         mSplashScreenView = new ImageView(this);
         mSplashScreenView.setImageResource(mSplashScreenImageResource);
         addContentView(mSplashScreenView, new LayoutParams(
                         LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
-        
+
         mSplashScreenStartTime = System.currentTimeMillis();
 
     }
-    
-    
+
+
     /** Native function to initialize the application. */
     private native void initApplicationNative(int width, int height);
 
 
     /** Initializes AR application components. */
     private void initApplicationAR()
-    {        
+    {
         // Do application initialization in native code (e.g. registering
         // callbacks, etc.)
         initApplicationNative(mScreenWidth, mScreenHeight);
@@ -565,30 +565,30 @@ public class FrameMarkers extends Activity
         int depthSize = 16;
         int stencilSize = 0;
         boolean translucent = QCAR.requiresAlpha();
-        
+
         mGlView = new QCARSampleGLView(this);
         mGlView.init(mQCARFlags, translucent, depthSize, stencilSize);
-        
+
         mRenderer = new FrameMarkersRenderer();
         mGlView.setRenderer(mRenderer);
- 
+
     }
 
-    
+
     /** Returns the number of registered textures. */
     public int getTextureCount()
     {
         return mTextures.size();
     }
 
-    
+
     /** Returns the texture object at the specified index. */
     public Texture getTexture(int i)
     {
         return mTextures.elementAt(i);
     }
 
-    
+
     /** A helper for loading native libraries stored in "libs/armeabi*". */
     public static boolean loadLibrary(String nLibName)
     {
@@ -608,7 +608,7 @@ public class FrameMarkers extends Activity
             DebugLog.LOGE("The library lib" + nLibName +
                             ".so was not allowed to be loaded");
         }
-        
+
         return false;
-    }    
+    }
 }

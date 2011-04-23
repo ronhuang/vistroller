@@ -2,8 +2,8 @@
             Copyright (c) 2010 QUALCOMM Incorporated.
             All Rights Reserved.
             Qualcomm Confidential and Proprietary
-            
-@file 
+
+@file
     Texture.cpp
 
 @brief
@@ -70,8 +70,8 @@ Texture::create(JNIEnv* env, jobject textureObject)
         LOG("Function GetTextureBuffer() not found.");
         return 0;
     }
-    
-    jbyteArray pixelBuffer = (jbyteArray)env->CallObjectMethod(textureObject, texBufferMethodId);    
+
+    jbyteArray pixelBuffer = (jbyteArray)env->CallObjectMethod(textureObject, texBufferMethodId);
     if (pixelBuffer == NULL)
     {
         LOG("Get image buffer returned zero pointer");
@@ -98,7 +98,7 @@ Texture::create(JNIEnv* env, jobject textureObject)
 
     // Release:
     env->ReleaseByteArrayElements(pixelBuffer, pixels, 0);
-    
+
     return newTexture;
 }
 

@@ -19,9 +19,9 @@ import android.opengl.GLSurfaceView;
 
 
 /** QCARSampleGLView is a support class for the QCAR samples applications.
- * 
+ *
  *  Responsible for setting up and configuring the OpenGL surface view.
- *  
+ *
  * */
 public class QCARSampleGLView extends GLSurfaceView
 {
@@ -33,14 +33,14 @@ public class QCARSampleGLView extends GLSurfaceView
         super(context);
     }
 
-    
+
     /** Initialization. */
     public void init(int flags, boolean translucent, int depth, int stencil)
     {
         // By default GLSurfaceView tries to find a surface that is as close
         // as possible to a 16-bit RGB frame buffer with a 16-bit depth buffer.
         // This function can override the default values and set custom values.
-        
+
         // Extract OpenGL ES version from flags
         mUseOpenGLES2 = (flags & QCAR.GL_20) != 0;
 
@@ -48,7 +48,7 @@ public class QCARSampleGLView extends GLSurfaceView
         // If we want a translucent one, we should change the surface's
         // format here, using PixelFormat.TRANSLUCENT for GL Surfaces
         // is interpreted as any 32-bit surface with alpha by SurfaceFlinger.
-     
+
         DebugLog.LOGI("Using OpenGL ES " + (mUseOpenGLES2 ? "2.0" : "1.x"));
         DebugLog.LOGI("Using " + (translucent ? "translucent" : "opaque") +
             " GLView, depth buffer size: " + depth + ", stencil size: " +
@@ -60,7 +60,7 @@ public class QCARSampleGLView extends GLSurfaceView
         {
             this.getHolder().setFormat(PixelFormat.TRANSLUCENT);
         }
-            
+
         // Setup the context factory for 1.x / 2.0 rendering
         setEGLContextFactory(new ContextFactory());
 
@@ -73,7 +73,7 @@ public class QCARSampleGLView extends GLSurfaceView
                              new ConfigChooser(5, 6, 5, 0, depth, stencil) );
     }
 
-    
+
     /** Creates OpenGL contexts. */
     private static class ContextFactory implements GLSurfaceView.EGLContextFactory
     {
@@ -136,7 +136,7 @@ public class QCARSampleGLView extends GLSurfaceView
             mStencilSize = stencil;
         }
 
-        
+
         private EGLConfig getMatchingConfig(EGL10 egl, EGLDisplay display,
             int[] configAttribs)
         {
@@ -157,7 +157,7 @@ public class QCARSampleGLView extends GLSurfaceView
             return chooseConfig(egl, display, configs);
         }
 
-        
+
         public EGLConfig chooseConfig(EGL10 egl, EGLDisplay display)
         {
             if (mUseOpenGLES2)
@@ -194,7 +194,7 @@ public class QCARSampleGLView extends GLSurfaceView
             }
         }
 
-        
+
         public EGLConfig chooseConfig(
             EGL10 egl, EGLDisplay display, EGLConfig[] configs)
         {
@@ -229,7 +229,7 @@ public class QCARSampleGLView extends GLSurfaceView
             return null;
         }
 
-        
+
         private int findConfigAttrib(
             EGL10 egl, EGLDisplay display, EGLConfig config, int attribute,
             int defaultValue)

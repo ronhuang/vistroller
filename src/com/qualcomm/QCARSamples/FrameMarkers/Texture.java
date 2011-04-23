@@ -15,9 +15,9 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
 /** Texture is a support class for the QCAR samples applications.
- * 
+ *
  *  Exposes functionality for loading a texture from the APK.
- *  
+ *
  * */
 
 public class Texture
@@ -26,14 +26,14 @@ public class Texture
     public int mHeight;     /// The height of the texture.
     public int mChannels;   /// The number of channels.
     public byte[] mData;    /// The pixel data.
-    
+
     /** Returns the raw data */
     public byte[] getData()
     {
         return mData;
-    }    
-    
-    
+    }
+
+
     /** Factory function to load a texture from the APK. */
     public static Texture loadTextureFromApk(String fileName,
                                                 AssetManager assets)
@@ -42,14 +42,14 @@ public class Texture
         try
         {
             inputStream = assets.open(fileName, AssetManager.ACCESS_BUFFER);
-             
+
             BufferedInputStream bufferedStream = new BufferedInputStream(inputStream);
             Bitmap bitMap = BitmapFactory.decodeStream(bufferedStream);
-            
+
             int[] data = new int[bitMap.getWidth() * bitMap.getHeight()];
             bitMap.getPixels(data, 0, bitMap.getWidth(), 0, 0,
                                 bitMap.getWidth(), bitMap.getHeight());
-            
+
             // Convert:
             byte[] dataBytes = new byte[bitMap.getWidth() *
                                        bitMap.getHeight() * 4];
@@ -61,13 +61,13 @@ public class Texture
                 dataBytes[p * 4 + 2]    = (byte) colour;            // B
                 dataBytes[p * 4 + 3]    = (byte)(colour >>> 24);    // A
             }
-            
+
             Texture texture = new Texture();
             texture.mWidth      = bitMap.getWidth();
             texture.mHeight     = bitMap.getHeight();
             texture.mChannels   = 4;
             texture.mData       = dataBytes;
-            
+
             return texture;
         }
         catch (IOException e)

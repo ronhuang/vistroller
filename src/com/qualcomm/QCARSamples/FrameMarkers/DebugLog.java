@@ -9,9 +9,9 @@ package com.qualcomm.QCARSamples.FrameMarkers;
 import android.util.Log;
 
 /** DebugLog is a support class for the QCAR samples applications.
- * 
+ *
  *  Exposes functionality for logging.
- *  
+ *
  * */
 
 public class DebugLog
@@ -24,17 +24,17 @@ public class DebugLog
     {
         Log.e(LOGTAG, nMessage);
     }
-    
+
     public static final void LOGW(String nMessage)
     {
         Log.w(LOGTAG, nMessage);
     }
-    
+
     public static final void LOGD(String nMessage)
     {
         Log.d(LOGTAG, nMessage);
     }
-    
+
     public static final void LOGI(String nMessage)
     {
         Log.i(LOGTAG, nMessage);

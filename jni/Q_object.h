@@ -2,8 +2,8 @@
             Copyright (c) 2010 QUALCOMM Incorporated.
             All Rights Reserved.
             Qualcomm Confidential and Proprietary
-            
-@file 
+
+@file
     Q_object.h
 
 @brief

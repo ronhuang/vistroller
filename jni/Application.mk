@@ -7,7 +7,7 @@
 
 # Build both ARMv5TE and ARMv7-A machine code.
 
-APP_ABI := armeabi armeabi-v7a 
+APP_ABI := armeabi armeabi-v7a
 
 # This optional variable can be defined to either 'release' or
 # 'debug'. This is used to alter the optimization level when
@@ -21,6 +21,6 @@ APP_ABI := armeabi armeabi-v7a
 # binaries, but the 'release' builds tend to provide less information
 # during debugging sessions: some variables are optimized out and
 # can't be inspected, code re-ordering can make stepping through
-# the code difficult, stack traces may not be reliable, etc... 
+# the code difficult, stack traces may not be reliable, etc...
 
 # APP_OPTIM := release OR debug

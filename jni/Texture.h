@@ -2,8 +2,8 @@
             Copyright (c) 2010 QUALCOMM Incorporated.
             All Rights Reserved.
             Qualcomm Confidential and Proprietary
-            
-@file 
+
+@file
     Texture.h
 
 @brief
@@ -37,7 +37,7 @@ public:
 
     /// Create a texture from a jni object:
     static Texture* create(JNIEnv* env, jobject textureObject);
- 
+
     /// The width of the texture.
     unsigned int mWidth;
 
