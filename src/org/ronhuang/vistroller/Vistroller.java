@@ -46,7 +46,7 @@ public class Vistroller extends Activity
     private static final int APPSTATUS_CAMERA_RUNNING   = 6;
 
     // Name of the native dynamic libraries to load:
-    private static final String NATIVE_LIB_SAMPLE = "Vistroller";
+    private static final String NATIVE_LIB_VISTROLLER = "vistroller";
     private static final String NATIVE_LIB_QCAR = "QCAR";
 
     // Our OpenGL view:
@@ -86,7 +86,7 @@ public class Vistroller extends Activity
     static
     {
         loadLibrary(NATIVE_LIB_QCAR);
-        loadLibrary(NATIVE_LIB_SAMPLE);
+        loadLibrary(NATIVE_LIB_VISTROLLER);
     }
 
 

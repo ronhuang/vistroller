@@ -27,7 +27,7 @@ include $(CLEAR_VARS)
 # prefix and suffix to the corresponding generated file. In other words,
 # a shared library module named 'foo' will generate 'libfoo.so'.
 
-LOCAL_MODULE := Vistroller
+LOCAL_MODULE := vistroller
 
 # The TARGET_PLATFORM defines the targetted Android Platform API level
 
