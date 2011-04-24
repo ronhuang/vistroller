@@ -178,7 +178,7 @@ Java_org_ronhuang_Vistroller_FrameMarkersRenderer_renderFrame(JNIEnv *, jobject)
                            (GLfloat*)&modelViewProjection.data[0]);
         glDrawElements(GL_TRIANGLES, numIndices, GL_UNSIGNED_SHORT, indices);
 
-        SampleUtils::checkGlError("FrameMarkers render frame");
+        SampleUtils::checkGlError("Vistroller render frame");
 
     }
 
@@ -256,7 +256,7 @@ Java_org_ronhuang_Vistroller_initApplicationNative(JNIEnv* env, jobject obj, jin
     textures = new Texture*[textureCount];
 
     jmethodID getTextureMethodID = env->GetMethodID(activityClass,
-        "getTexture", "(I)Lcom/qualcomm/QCARSamples/FrameMarkers/Texture;");
+        "getTexture", "(I)Lorg/ronhuang/Vistroller/Texture;");
 
     if (getTextureMethodID == 0)
     {

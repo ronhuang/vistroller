@@ -4,15 +4,15 @@
             Qualcomm Confidential and Proprietary
 
 @file
-    FrameMarkers.java
+    Vistroller.java
 
 @brief
-    Sample for FrameMarkers
+    Visual Controller using frame markers
 
 ==============================================================================*/
 
 
-package com.qualcomm.QCARSamples.FrameMarkers;
+package org.ronhuang.Vistroller;
 
 import java.util.Vector;
 
@@ -32,8 +32,8 @@ import android.widget.ImageView;
 import com.qualcomm.QCAR.QCAR;
 
 
-/** The main activity for the FrameMarkers sample. */
-public class FrameMarkers extends Activity
+/** The main activity for the Vistroller. */
+public class Vistroller extends Activity
 {
     // Application status constants:
     private static final int APPSTATUS_UNINITED         = -1;
@@ -46,7 +46,7 @@ public class FrameMarkers extends Activity
     private static final int APPSTATUS_CAMERA_RUNNING   = 6;
 
     // Name of the native dynamic libraries to load:
-    private static final String NATIVE_LIB_SAMPLE = "FrameMarkers";
+    private static final String NATIVE_LIB_SAMPLE = "Vistroller";
     private static final String NATIVE_LIB_QCAR = "QCAR";
 
     // Our OpenGL view:
@@ -98,7 +98,7 @@ public class FrameMarkers extends Activity
 
         protected Boolean doInBackground(Void... params)
         {
-            QCAR.setInitParameters(FrameMarkers.this, mQCARFlags);
+            QCAR.setInitParameters(Vistroller.this, mQCARFlags);
 
             do
             {
@@ -144,7 +144,7 @@ public class FrameMarkers extends Activity
             else
             {
             	// Create dialog box for display error:
-            	AlertDialog dialogError = new AlertDialog.Builder(FrameMarkers.this).create();
+            	AlertDialog dialogError = new AlertDialog.Builder(Vistroller.this).create();
             	dialogError.setButton(
             		"Close",
             		new DialogInterface.OnClickListener()
@@ -236,7 +236,7 @@ public class FrameMarkers extends Activity
      * to an activity. */
     protected void onCreate(Bundle savedInstanceState)
     {
-        DebugLog.LOGD("FrameMarkers::onCreate");
+        DebugLog.LOGD("Vistroller::onCreate");
         super.onCreate(savedInstanceState);
 
         // Set the splash screen image to display during initialization:
@@ -280,7 +280,7 @@ public class FrameMarkers extends Activity
    /** Called when the activity will start interacting with the user.*/
     protected void onResume()
     {
-        DebugLog.LOGD("FrameMarkers::onResume");
+        DebugLog.LOGD("Vistroller::onResume");
         super.onResume();
 
         // QCAR-specific resume operation
@@ -303,7 +303,7 @@ public class FrameMarkers extends Activity
     /** Called when the system is about to start resuming a previous activity.*/
     protected void onPause()
     {
-        DebugLog.LOGD("FrameMarkers::onPause");
+        DebugLog.LOGD("Vistroller::onPause");
         super.onPause();
 
         if (mGlView != null)
@@ -329,7 +329,7 @@ public class FrameMarkers extends Activity
     /** The final call you receive before your activity is destroyed.*/
     protected void onDestroy()
     {
-        DebugLog.LOGD("FrameMarkers::onDestroy");
+        DebugLog.LOGD("Vistroller::onDestroy");
         super.onDestroy();
 
         // Cancel potentially running tasks
@@ -362,7 +362,7 @@ public class FrameMarkers extends Activity
 
 
     /** NOTE: this method is synchronized because of a potential concurrent
-     * access by FrameMarkers::onResume() and InitQCARTask::onPostExecute(). */
+     * access by Vistroller::onResume() and InitQCARTask::onPostExecute(). */
     private synchronized void updateApplicationStatus(int appStatus)
     {
         // Exit if there is no change in status
