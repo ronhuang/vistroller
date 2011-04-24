@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    
-    <string name="app_name">FrameMarkers</string>
-<string name="app_description">QCAR FrameMarkers Sample Application</string>
+    <string name="app_name">Vistroller</string>
+    <string name="app_description">Visual Controller</string>
 </resources>
