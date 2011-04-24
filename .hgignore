@@ -4,3 +4,7 @@
 ^gen/
 ^libs/
 ^obj/
+^test/bin/
+^test/gen/
+^test/libs/
+^test/obj/
