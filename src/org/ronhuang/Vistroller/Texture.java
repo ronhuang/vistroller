@@ -4,7 +4,7 @@
             Qualcomm Confidential and Proprietary
 ==============================================================================*/
 
-package org.ronhuang.Vistroller;
+package org.ronhuang.vistroller;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
