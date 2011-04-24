@@ -4,7 +4,7 @@
             Qualcomm Confidential and Proprietary
 ==============================================================================*/
 
-package com.qualcomm.QCARSamples.FrameMarkers;
+package org.ronhuang.Vistroller;
 
 import android.util.Log;
 

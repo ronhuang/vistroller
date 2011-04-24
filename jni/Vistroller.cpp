@@ -4,10 +4,10 @@
             Qualcomm Confidential and Proprietary
 
 @file
-    FrameMarkers.cpp
+    Vistroller.cpp
 
 @brief
-    Sample for FrameMarkers
+    Native interfaces for Vistroller
 
 ==============================================================================*/
 
@@ -71,16 +71,16 @@ static const float kLetterTranslate    = 25.0f;
 
 
 JNIEXPORT void JNICALL
-Java_com_qualcomm_QCARSamples_FrameMarkers_FrameMarkers_setActivityPortraitMode(JNIEnv *, jobject, jboolean isPortrait)
+Java_org_ronhuang_Vistroller_setActivityPortraitMode(JNIEnv *, jobject, jboolean isPortrait)
 {
     isActivityInPortraitMode = isPortrait;
 }
 
 
 JNIEXPORT void JNICALL
-Java_com_qualcomm_QCARSamples_FrameMarkers_FrameMarkersRenderer_renderFrame(JNIEnv *, jobject)
+Java_org_ronhuang_Vistroller_FrameMarkersRenderer_renderFrame(JNIEnv *, jobject)
 {
-    //LOG("Java_com_qualcomm_QCARSamples_FrameMarkers_GLRenderer_renderFrame");
+    //LOG("Java_org_ronhuang_Vistroller_GLRenderer_renderFrame");
 
     // Clear color and depth buffer
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -227,10 +227,9 @@ configureVideoBackground()
 
 
 JNIEXPORT void JNICALL
-Java_com_qualcomm_QCARSamples_FrameMarkers_FrameMarkers_initApplicationNative(
-                            JNIEnv* env, jobject obj, jint width, jint height)
+Java_org_ronhuang_Vistroller_initApplicationNative(JNIEnv* env, jobject obj, jint width, jint height)
 {
-    LOG("Java_com_qualcomm_QCARSamples_FrameMarkers_FrameMarkers_initApplicationNative");
+    LOG("Java_org_ronhuang_Vistroller_initApplicationNative");
 
     // Store screen dimensions
     screenWidth = width;
@@ -282,10 +281,9 @@ Java_com_qualcomm_QCARSamples_FrameMarkers_FrameMarkers_initApplicationNative(
 
 
 JNIEXPORT void JNICALL
-Java_com_qualcomm_QCARSamples_FrameMarkers_FrameMarkers_deinitApplicationNative(
-                                                        JNIEnv* env, jobject obj)
+Java_org_ronhuang_Vistroller_deinitApplicationNative(JNIEnv* env, jobject obj)
 {
-    LOG("Java_com_qualcomm_QCARSamples_FrameMarkers_FrameMarkers_deinitApplicationNative");
+    LOG("Java_org_ronhuang_Vistroller_deinitApplicationNative");
 
     // Release texture resources
     if (textures != 0)
@@ -305,10 +303,9 @@ Java_com_qualcomm_QCARSamples_FrameMarkers_FrameMarkers_deinitApplicationNative(
 
 
 JNIEXPORT void JNICALL
-Java_com_qualcomm_QCARSamples_FrameMarkers_FrameMarkers_startCamera(JNIEnv *,
-                                                                         jobject)
+Java_org_ronhuang_Vistroller_startCamera(JNIEnv *, jobject)
 {
-    LOG("Java_com_qualcomm_QCARSamples_FrameMarkers_FrameMarkers_startCamera");
+    LOG("Java_org_ronhuang_Vistroller_startCamera");
 
     // Initialize the camera:
     if (!QCAR::CameraDevice::getInstance().init())
@@ -339,10 +336,9 @@ Java_com_qualcomm_QCARSamples_FrameMarkers_FrameMarkers_startCamera(JNIEnv *,
 
 
 JNIEXPORT void JNICALL
-Java_com_qualcomm_QCARSamples_FrameMarkers_FrameMarkers_stopCamera(JNIEnv *,
-                                                                   jobject)
+Java_org_ronhuang_Vistroller_stopCamera(JNIEnv *, jobject)
 {
-    LOG("Java_com_qualcomm_QCARSamples_FrameMarkers_FrameMarkers_stopCamera");
+    LOG("Java_org_ronhuang_Vistroller_stopCamera");
 
     QCAR::Tracker::getInstance().stop();
 
@@ -352,10 +348,10 @@ Java_com_qualcomm_QCARSamples_FrameMarkers_FrameMarkers_stopCamera(JNIEnv *,
 
 
 JNIEXPORT void JNICALL
-Java_com_qualcomm_QCARSamples_FrameMarkers_FrameMarkersRenderer_initRendering(
+Java_org_ronhuang_Vistroller_FrameMarkersRenderer_initRendering(
                                                     JNIEnv* env, jobject obj)
 {
-    LOG("Java_com_qualcomm_QCARSamples_FrameMarkers_FrameMarkersRenderer_initRendering");
+    LOG("Java_org_ronhuang_Vistroller_FrameMarkersRenderer_initRendering");
 
     // Define clear color
     glClearColor(0.0f, 0.0f, 0.0f, QCAR::requiresAlpha() ? 0.0f : 1.0f);
@@ -388,10 +384,10 @@ Java_com_qualcomm_QCARSamples_FrameMarkers_FrameMarkersRenderer_initRendering(
 
 
 JNIEXPORT void JNICALL
-Java_com_qualcomm_QCARSamples_FrameMarkers_FrameMarkersRenderer_updateRendering(
+Java_org_ronhuang_Vistroller_FrameMarkersRenderer_updateRendering(
                         JNIEnv* env, jobject obj, jint width, jint height)
 {
-    LOG("Java_com_qualcomm_QCARSamples_FrameMarkers_FrameMarkersRenderer_updateRendering");
+    LOG("Java_org_ronhuang_Vistroller_FrameMarkersRenderer_updateRendering");
 
     // Update screen dimensions
     screenWidth = width;

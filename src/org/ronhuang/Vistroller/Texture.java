@@ -4,7 +4,7 @@
             Qualcomm Confidential and Proprietary
 ==============================================================================*/
 
-package com.qualcomm.QCARSamples.FrameMarkers;
+package org.ronhuang.Vistroller;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;

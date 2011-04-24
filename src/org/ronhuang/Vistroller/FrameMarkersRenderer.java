@@ -12,7 +12,7 @@
 ==============================================================================*/
 
 
-package com.qualcomm.QCARSamples.FrameMarkers;
+package org.ronhuang.Vistroller;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
