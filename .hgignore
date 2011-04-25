@@ -4,7 +4,9 @@
 ^gen/
 ^libs/
 ^obj/
+^local\.properties
 ^test/bin/
 ^test/gen/
 ^test/libs/
 ^test/obj/
+^test/local\.properties
