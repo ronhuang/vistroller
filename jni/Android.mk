@@ -41,8 +41,8 @@ TARGET_PLATFORM := android-5
 LOCAL_C_INCLUDES := $(QCAR_SDK_ROOT)/build/include
 
 # This sample always uses OpenGL ES 2.0.
-OPENGLES_LIB  := -lGLESv2
-OPENGLES_DEF  := -DUSE_OPENGL_ES_2_0
+OPENGLES_LIB  := -lGLESv1_CM
+OPENGLES_DEF  := -DUSE_OPENGL_ES_1_1
 
 # An optional set of compiler flags that will be passed when building
 # C ***AND*** C++ source files.
