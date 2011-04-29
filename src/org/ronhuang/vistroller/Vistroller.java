@@ -78,8 +78,6 @@ public class Vistroller extends Activity
     // QCAR initialization flags
     private int mQCARFlags = 0;
 
-    // The textures we will use for rendering:
-    private Vector<Texture> mTextures;
     private int mSplashScreenImageResource = 0;
 
     /** Static initializer block to load native libraries on start-up. */
@@ -242,26 +240,11 @@ public class Vistroller extends Activity
         // Set the splash screen image to display during initialization:
         mSplashScreenImageResource = R.drawable.splash_screen_frame_markers;
 
-        // Load any sample specific textures:
-        mTextures = new Vector<Texture>();
-        loadTextures();
-
         // Query the QCAR initialization flags:
         mQCARFlags = getInitializationFlags();
 
         // Update the application status to start initializing application
         updateApplicationStatus(APPSTATUS_INIT_APP);
-    }
-
-
-    /** We want to load specific textures from the APK, which we will later
-    use for rendering. */
-    private void loadTextures()
-    {
-        mTextures.add(Texture.loadTextureFromApk("letter_Q.png", getAssets()));
-        mTextures.add(Texture.loadTextureFromApk("letter_C.png", getAssets()));
-        mTextures.add(Texture.loadTextureFromApk("letter_A.png", getAssets()));
-        mTextures.add(Texture.loadTextureFromApk("letter_R.png", getAssets()));
     }
 
 
@@ -349,10 +332,6 @@ public class Vistroller extends Activity
 
         // Do application deinitialization in native code
         deinitApplicationNative();
-
-        // Unload texture
-        mTextures.clear();
-        mTextures = null;
 
         // Deinitialize QCAR SDK
         QCAR.deinit();
@@ -572,20 +551,6 @@ public class Vistroller extends Activity
         mRenderer = new FrameMarkersRenderer();
         mGlView.setRenderer(mRenderer);
 
-    }
-
-
-    /** Returns the number of registered textures. */
-    public int getTextureCount()
-    {
-        return mTextures.size();
-    }
-
-
-    /** Returns the texture object at the specified index. */
-    public Texture getTexture(int i)
-    {
-        return mTextures.elementAt(i);
     }
 
 

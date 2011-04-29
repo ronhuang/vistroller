@@ -32,7 +32,6 @@
 #include <QCAR/Marker.h>
 
 #include "SampleUtils.h"
-#include "Texture.h"
 #include "CubeShaders.h"
 #include "Q_object.h"
 #include "C_object.h"
@@ -44,15 +43,10 @@ extern "C"
 {
 #endif
 
-// Textures:
-int textureCount                = 0;
-Texture** textures              = 0;
-
 // OpenGL ES 2.0 specific:
 unsigned int shaderProgramID    = 0;
 GLint vertexHandle              = 0;
 GLint normalHandle              = 0;
-GLint textureCoordHandle        = 0;
 GLint mvpMatrixHandle           = 0;
 
 // Screen dimensions:
@@ -99,23 +93,14 @@ Java_org_ronhuang_vistroller_FrameMarkersRenderer_renderFrame(JNIEnv *, jobject)
         QCAR::Matrix44F modelViewMatrix =
             QCAR::Tool::convertPose2GLMatrix(trackable->getPose());
 
-        // Choose the texture based on the target name:
-        int textureIndex = 0;
-
         // Check the type of the trackable:
         assert(trackable->getType() == QCAR::Trackable::MARKER);
         const QCAR::Marker* marker = static_cast<const QCAR::Marker*>(trackable);
-
-        textureIndex = marker->getMarkerId();
-
-        assert(textureIndex < textureCount);
-        const Texture* const thisTexture = textures[textureIndex];
 
         // Select which model to draw:
         const GLvoid* vertices = 0;
         const GLvoid* normals = 0;
         const GLvoid* indices = 0;
-        const GLvoid* texCoords = 0;
         int numIndices = 0;
 
         switch (marker->getMarkerId())
@@ -124,28 +109,24 @@ Java_org_ronhuang_vistroller_FrameMarkersRenderer_renderFrame(JNIEnv *, jobject)
             vertices = &QobjectVertices[0];
             normals = &QobjectNormals[0];
             indices = &QobjectIndices[0];
-            texCoords = &QobjectTexCoords[0];
             numIndices = NUM_Q_OBJECT_INDEX;
             break;
         case 1:
             vertices = &CobjectVertices[0];
             normals = &CobjectNormals[0];
             indices = &CobjectIndices[0];
-            texCoords = &CobjectTexCoords[0];
             numIndices = NUM_C_OBJECT_INDEX;
             break;
         case 2:
             vertices = &AobjectVertices[0];
             normals = &AobjectNormals[0];
             indices = &AobjectIndices[0];
-            texCoords = &AobjectTexCoords[0];
             numIndices = NUM_A_OBJECT_INDEX;
             break;
         default:
             vertices = &RobjectVertices[0];
             normals = &RobjectNormals[0];
             indices = &RobjectIndices[0];
-            texCoords = &RobjectTexCoords[0];
             numIndices = NUM_R_OBJECT_INDEX;
             break;
         }
@@ -166,14 +147,10 @@ Java_org_ronhuang_vistroller_FrameMarkersRenderer_renderFrame(JNIEnv *, jobject)
 
         glVertexAttribPointer(vertexHandle, 3, GL_FLOAT, GL_FALSE, 0, vertices);
         glVertexAttribPointer(normalHandle, 3, GL_FLOAT, GL_FALSE, 0, normals);
-        glVertexAttribPointer(textureCoordHandle, 2, GL_FLOAT, GL_FALSE,
-                              0, texCoords);
 
         glEnableVertexAttribArray(vertexHandle);
         glEnableVertexAttribArray(normalHandle);
-        glEnableVertexAttribArray(textureCoordHandle);
 
-        glBindTexture(GL_TEXTURE_2D, thisTexture->mTextureID);
         glUniformMatrix4fv(mvpMatrixHandle, 1, GL_FALSE,
                            (GLfloat*)&modelViewProjection.data[0]);
         glDrawElements(GL_TRIANGLES, numIndices, GL_UNSIGNED_SHORT, indices);
@@ -185,7 +162,6 @@ Java_org_ronhuang_vistroller_FrameMarkersRenderer_renderFrame(JNIEnv *, jobject)
     glDisable(GL_DEPTH_TEST);
     glDisableVertexAttribArray(vertexHandle);
     glDisableVertexAttribArray(normalHandle);
-    glDisableVertexAttribArray(textureCoordHandle);
 
     QCAR::Renderer::getInstance().end();
 }
@@ -234,49 +210,6 @@ Java_org_ronhuang_vistroller_Vistroller_initApplicationNative(JNIEnv* env, jobje
     // Store screen dimensions
     screenWidth = width;
     screenHeight = height;
-
-    // Handle to the activity class:
-    jclass activityClass = env->GetObjectClass(obj);
-
-    jmethodID getTextureCountMethodID = env->GetMethodID(activityClass,
-                                                    "getTextureCount", "()I");
-    if (getTextureCountMethodID == 0)
-    {
-        LOG("Function getTextureCount() not found.");
-        return;
-    }
-
-    textureCount = (int) env->CallObjectMethod(obj, getTextureCountMethodID);
-    if (!textureCount)
-    {
-        LOG("getTextureCount() returned zero.");
-        return;
-    }
-
-    textures = new Texture*[textureCount];
-
-    jmethodID getTextureMethodID = env->GetMethodID(activityClass,
-        "getTexture", "(I)Lorg/ronhuang/vistroller/Texture;");
-
-    if (getTextureMethodID == 0)
-    {
-        LOG("Function getTexture() not found.");
-        return;
-    }
-
-    // Register the textures
-    for (int i = 0; i < textureCount; ++i)
-    {
-
-        jobject textureObject = env->CallObjectMethod(obj, getTextureMethodID, i);
-        if (textureObject == NULL)
-        {
-            LOG("GetTexture() returned zero pointer");
-            return;
-        }
-
-        textures[i] = Texture::create(env, textureObject);
-    }
 }
 
 
@@ -284,21 +217,6 @@ JNIEXPORT void JNICALL
 Java_org_ronhuang_vistroller_Vistroller_deinitApplicationNative(JNIEnv* env, jobject obj)
 {
     LOG("Java_org_ronhuang_vistroller_Vistroller_deinitApplicationNative");
-
-    // Release texture resources
-    if (textures != 0)
-    {
-        for (int i = 0; i < textureCount; ++i)
-        {
-            delete textures[i];
-            textures[i] = NULL;
-        }
-
-        delete[]textures;
-        textures = NULL;
-
-        textureCount = 0;
-    }
 }
 
 
@@ -356,18 +274,6 @@ Java_org_ronhuang_vistroller_FrameMarkersRenderer_initRendering(
     // Define clear color
     glClearColor(0.0f, 0.0f, 0.0f, QCAR::requiresAlpha() ? 0.0f : 1.0f);
 
-    // Now generate the OpenGL texture objects and add settings
-    for (int i = 0; i < textureCount; ++i)
-    {
-        glGenTextures(1, &(textures[i]->mTextureID));
-        glBindTexture(GL_TEXTURE_2D, textures[i]->mTextureID);
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, textures[i]->mWidth,
-                textures[i]->mHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE,
-                (GLvoid*)  textures[i]->mData);
-    }
-
     shaderProgramID     = SampleUtils::createProgramFromBuffer(cubeMeshVertexShader,
                                                             cubeFragmentShader);
 
@@ -375,8 +281,6 @@ Java_org_ronhuang_vistroller_FrameMarkersRenderer_initRendering(
                                                 "vertexPosition");
     normalHandle        = glGetAttribLocation(shaderProgramID,
                                                 "vertexNormal");
-    textureCoordHandle  = glGetAttribLocation(shaderProgramID,
-                                                "vertexTexCoord");
     mvpMatrixHandle     = glGetUniformLocation(shaderProgramID,
                                                 "modelViewProjectionMatrix");
 
