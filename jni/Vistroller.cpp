@@ -69,14 +69,6 @@ Java_org_ronhuang_vistroller_FrameMarkersRenderer_renderFrame(JNIEnv *, jobject)
     // Clear color and depth buffer
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    glMatrixMode(GL_MODELVIEW);
-    glFrontFace(GL_CW);
-
-    glLoadIdentity();
-
-    glEnableClientState(GL_VERTEX_ARRAY);
-    //glEnableClientState(GL_COLOR_ARRAY);
-
     // Render video background:
     QCAR::State state = QCAR::Renderer::getInstance().begin();
 
@@ -122,6 +114,7 @@ Java_org_ronhuang_vistroller_FrameMarkersRenderer_renderFrame(JNIEnv *, jobject)
         SampleUtils::checkGlError("Vistroller render frame");
     }
 
+    glDisable(GL_CULL_FACE);
     glDisable(GL_DEPTH_TEST);
 
     QCAR::Renderer::getInstance().end();
