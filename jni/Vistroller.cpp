@@ -61,8 +61,8 @@ bool isActivityInPortraitMode   = false;
 QCAR::Matrix44F projectionMatrix;
 
 // Constants:
-static const float kLetterScale        = 25.0f;
-static const float kLetterTranslate    = 25.0f;
+static const float kLetterScale        = 10.0f;
+static const float kLetterTranslate    = 0.0f;
 
 
 JNIEXPORT void JNICALL
