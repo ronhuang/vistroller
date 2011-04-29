@@ -37,6 +37,7 @@
     <import file="${sdk.dir}/tools/ant/pre_setup.xml" />
 
 
+    <!-- QCAR library -->
     <target name="-copy-qcar">
         <copy file="${qcar.sdk.dir}/build/java/QCAR/QCAR.jar" todir="${jar.libs.dir}" />
         <copy file="${qcar.sdk.dir}/build/lib/armeabi/libQCAR.so" todir="${native.libs.dir}/armeabi" />
@@ -49,9 +50,54 @@
         <delete file="${native.libs.dir}/armeabi-v7a/libQCAR.so" />
     </target>
 
+    <!-- Directory for the native input directory -->
+    <property name="native.src.dir" value="jni" />
+    <property name="native.src.absolute.dir" location="${native.src.dir}" />
+
+    <!-- Native library -->
+    <target name="-build-jni">
+      <exec executable="ndk-build" dir="${native.src.dir}" />
+    </target>
+
+    <target name="clean-jni">
+      <exec executable="ndk-build" dir="${native.src.dir}">
+        <arg value="clean" />
+      </exec>
+    </target>
+
+    <!-- Deploy debug apk to device -->
+    <target name="-uninstall-apk">
+      <exec executable="adb">
+        <arg value="uninstall" />
+        <arg value="org.ronhuang.vistroller" />
+      </exec>
+    </target>
+
+    <target name="-install-apk">
+      <exec executable="adb" dir="${out.dir}">
+        <arg value="install" />
+        <arg value="Vistroller-debug.apk" />
+      </exec>
+    </target>
+
+    <target name="-start-apk">
+      <exec executable="adb">
+        <arg value="shell" />
+        <arg value="am" />
+        <arg value="start" />
+        <arg value="-a" />
+        <arg value="android.intent.action.MAIN" />
+        <arg value="-n" />
+        <arg value="org.ronhuang.vistroller/.Vistroller" />
+      </exec>
+    </target>
+
+    <target name="debug-deploy" depends="-uninstall-apk, -install-apk, -start-apk">
+    </target>
+
 <!-- extension targets. Uncomment the ones where you want to do custom work
      in between standard targets -->
-    <target name="-pre-build" depends="-copy-qcar">
+    <target name="-pre-build" depends="-build-jni, -copy-qcar">
     </target>
 
 <!--
