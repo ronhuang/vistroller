@@ -56,7 +56,7 @@
 
     <!-- Native library -->
     <target name="-build-jni">
-      <exec executable="ndk-build" dir="${native.src.dir}" />
+      <exec executable="ndk-build" dir="${native.src.dir}" failonerror="true" />
     </target>
 
     <target name="clean-jni">
@@ -74,14 +74,14 @@
     </target>
 
     <target name="-install-apk">
-      <exec executable="adb" dir="${out.dir}">
+      <exec executable="adb" dir="${out.dir}" failonerror="true">
         <arg value="install" />
         <arg value="Vistroller-debug.apk" />
       </exec>
     </target>
 
     <target name="-start-apk">
-      <exec executable="adb">
+      <exec executable="adb" failonerror="true">
         <arg value="shell" />
         <arg value="am" />
         <arg value="start" />

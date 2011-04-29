@@ -75,7 +75,7 @@ Java_org_ronhuang_vistroller_Vistroller_setActivityPortraitMode(JNIEnv *, jobjec
 JNIEXPORT void JNICALL
 Java_org_ronhuang_vistroller_FrameMarkersRenderer_renderFrame(JNIEnv *, jobject)
 {
-    //LOG("Java_org_ronhuang_vistroller_Vistroller_GLRenderer_renderFrame");
+    //LOG("Java_org_ronhuang_vistroller_FrameMarkersRenderer_renderFrame");
 
     // Clear color and depth buffer
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -157,7 +157,6 @@ Java_org_ronhuang_vistroller_FrameMarkersRenderer_renderFrame(JNIEnv *, jobject)
         glDrawElements(GL_TRIANGLES, numIndices, GL_UNSIGNED_SHORT, indices);
 
         SampleUtils::checkGlError("Vistroller render frame");
-
     }
 
     glDisable(GL_DEPTH_TEST);
@@ -284,7 +283,6 @@ Java_org_ronhuang_vistroller_FrameMarkersRenderer_initRendering(
                                                 "vertexNormal");
     mvpMatrixHandle     = glGetUniformLocation(shaderProgramID,
                                                 "modelViewProjectionMatrix");
-
 }
 
 
