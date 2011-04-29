@@ -37,6 +37,7 @@
 #include "C_object.h"
 #include "A_object.h"
 #include "R_object.h"
+#include "Cube.h"
 
 #ifdef __cplusplus
 extern "C"
@@ -124,10 +125,10 @@ Java_org_ronhuang_vistroller_FrameMarkersRenderer_renderFrame(JNIEnv *, jobject)
             numIndices = NUM_A_OBJECT_INDEX;
             break;
         default:
-            vertices = &RobjectVertices[0];
-            normals = &RobjectNormals[0];
-            indices = &RobjectIndices[0];
-            numIndices = NUM_R_OBJECT_INDEX;
+            vertices = &CubeVertices[0];
+            normals = &CubeNormals[0];
+            indices = &CubeIndices[0];
+            numIndices = NUM_CUBE_INDEX;
             break;
         }
 
