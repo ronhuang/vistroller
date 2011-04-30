@@ -19,5 +19,5 @@ package org.ronhuang.vistroller;
 
 public interface VistrollerListener
 {
-    public void onVistrollerStateChanged(VistrollerState state);
+    public void onVistrollerStateChanged(Vistroller.State state);
 }

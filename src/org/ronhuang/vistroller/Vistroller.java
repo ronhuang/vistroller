@@ -67,6 +67,13 @@ public class Vistroller
     }
 
 
+    public enum State {
+        ENGINE_INITIALIZED,
+        TRACKER_INITIALIZED,
+        SYSTEM_INITIALIZED
+    }
+
+
     /** Constructor */
     public Vistroller(Activity nActivity)
     {
@@ -101,7 +108,7 @@ public class Vistroller
 
 
     /** Trigger state changed event to listeners. */
-    private void triggerStateChanged(VistrollerState state)
+    private void triggerStateChanged(State state)
     {
         for (int i = 0; i < mListeners.size(); i++) {
             mListeners.get(i).onVistrollerStateChanged(state);
@@ -181,7 +188,7 @@ public class Vistroller
                 updateScreenSize(mScreenWidth, mScreenHeight);
 
                 // Inform listeners.
-                triggerStateChanged(VistrollerState.ENGINE_INITIALIZED);
+                triggerStateChanged(State.ENGINE_INITIALIZED);
 
                 // Done initialization
                 updateApplicationStatus(STATUS_INIT_TRACKER);
@@ -271,7 +278,7 @@ public class Vistroller
             DebugLog.LOGD("LoadTrackerTask::onPostExecute: execution " +
                         (result ? "successful" : "failed"));
 
-            triggerStateChanged(VistrollerState.TRACKER_INITIALIZED);
+            triggerStateChanged(State.TRACKER_INITIALIZED);
 
             // Done loading the tracker, update application status:
             updateApplicationStatus(STATUS_INITED);

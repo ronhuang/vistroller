@@ -14,8 +14,6 @@
 
 package org.ronhuang.vistroller;
 
-import java.util.Vector;
-
 import android.app.Activity;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
@@ -160,7 +158,7 @@ public class VistrollerSample extends Activity implements VistrollerListener
 
 
     /** Listen to Vistroller events. */
-    public void onVistrollerStateChanged(VistrollerState state)
+    public void onVistrollerStateChanged(Vistroller.State state)
     {
         DebugLog.LOGD("VistrollerSample::onVistrollerStateChanged: " + state);
 
