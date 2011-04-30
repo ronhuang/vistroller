@@ -4,7 +4,7 @@
             Qualcomm Confidential and Proprietary
 
 @file
-    Vistroller.java
+    VistrollerSample.java
 
 @brief
     Visual Controller using frame markers
@@ -32,8 +32,8 @@ import android.widget.ImageView;
 import com.qualcomm.QCAR.QCAR;
 
 
-/** The main activity for the Vistroller. */
-public class Vistroller extends Activity
+/** The main activity for the VistrollerSample. */
+public class VistrollerSample extends Activity
 {
     // Application status constants:
     private static final int APPSTATUS_UNINITED         = -1;
@@ -96,7 +96,7 @@ public class Vistroller extends Activity
 
         protected Boolean doInBackground(Void... params)
         {
-            QCAR.setInitParameters(Vistroller.this, mQCARFlags);
+            QCAR.setInitParameters(VistrollerSample.this, mQCARFlags);
 
             do
             {
@@ -142,7 +142,7 @@ public class Vistroller extends Activity
             else
             {
             	// Create dialog box for display error:
-            	AlertDialog dialogError = new AlertDialog.Builder(Vistroller.this).create();
+            	AlertDialog dialogError = new AlertDialog.Builder(VistrollerSample.this).create();
             	dialogError.setButton(
             		"Close",
             		new DialogInterface.OnClickListener()
@@ -234,7 +234,7 @@ public class Vistroller extends Activity
      * to an activity. */
     protected void onCreate(Bundle savedInstanceState)
     {
-        DebugLog.LOGD("Vistroller::onCreate");
+        DebugLog.LOGD("VistrollerSample::onCreate");
         super.onCreate(savedInstanceState);
 
         // Set the splash screen image to display during initialization:
@@ -263,7 +263,7 @@ public class Vistroller extends Activity
    /** Called when the activity will start interacting with the user.*/
     protected void onResume()
     {
-        DebugLog.LOGD("Vistroller::onResume");
+        DebugLog.LOGD("VistrollerSample::onResume");
         super.onResume();
 
         // QCAR-specific resume operation
@@ -286,7 +286,7 @@ public class Vistroller extends Activity
     /** Called when the system is about to start resuming a previous activity.*/
     protected void onPause()
     {
-        DebugLog.LOGD("Vistroller::onPause");
+        DebugLog.LOGD("VistrollerSample::onPause");
         super.onPause();
 
         if (mGlView != null)
@@ -312,7 +312,7 @@ public class Vistroller extends Activity
     /** The final call you receive before your activity is destroyed.*/
     protected void onDestroy()
     {
-        DebugLog.LOGD("Vistroller::onDestroy");
+        DebugLog.LOGD("VistrollerSample::onDestroy");
         super.onDestroy();
 
         // Cancel potentially running tasks
@@ -341,7 +341,7 @@ public class Vistroller extends Activity
 
 
     /** NOTE: this method is synchronized because of a potential concurrent
-     * access by Vistroller::onResume() and InitQCARTask::onPostExecute(). */
+     * access by VistrollerSample::onResume() and InitQCARTask::onPostExecute(). */
     private synchronized void updateApplicationStatus(int appStatus)
     {
         // Exit if there is no change in status
