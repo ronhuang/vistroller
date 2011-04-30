@@ -66,7 +66,7 @@ static const float kLetterTranslate    = 0.0f;
 
 
 JNIEXPORT void JNICALL
-Java_org_ronhuang_vistroller_VistrollerSample_setActivityPortraitMode(JNIEnv *, jobject, jboolean isPortrait)
+Java_org_ronhuang_vistroller_Vistroller_setActivityPortraitMode(JNIEnv *, jobject, jboolean isPortrait)
 {
     isActivityInPortraitMode = isPortrait;
 }
@@ -203,9 +203,9 @@ configureVideoBackground()
 
 
 JNIEXPORT void JNICALL
-Java_org_ronhuang_vistroller_VistrollerSample_updateScreenSize(JNIEnv* env, jobject obj, jint width, jint height)
+Java_org_ronhuang_vistroller_Vistroller_updateScreenSize(JNIEnv* env, jobject obj, jint width, jint height)
 {
-    LOG("Java_org_ronhuang_vistroller_VistrollerSample_updateScreenSize");
+    LOG("Java_org_ronhuang_vistroller_Vistroller_updateScreenSize");
 
     // Store screen dimensions
     screenWidth = width;
@@ -214,16 +214,16 @@ Java_org_ronhuang_vistroller_VistrollerSample_updateScreenSize(JNIEnv* env, jobj
 
 
 JNIEXPORT void JNICALL
-Java_org_ronhuang_vistroller_VistrollerSample_deinitApplicationNative(JNIEnv* env, jobject obj)
+Java_org_ronhuang_vistroller_Vistroller_deinitApplicationNative(JNIEnv* env, jobject obj)
 {
-    LOG("Java_org_ronhuang_vistroller_VistrollerSample_deinitApplicationNative");
+    LOG("Java_org_ronhuang_vistroller_Vistroller_deinitApplicationNative");
 }
 
 
 JNIEXPORT void JNICALL
-Java_org_ronhuang_vistroller_VistrollerSample_startCamera(JNIEnv *, jobject)
+Java_org_ronhuang_vistroller_Vistroller_startCamera(JNIEnv *, jobject)
 {
-    LOG("Java_org_ronhuang_vistroller_VistrollerSample_startCamera");
+    LOG("Java_org_ronhuang_vistroller_Vistroller_startCamera");
 
     // Initialize the camera:
     if (!QCAR::CameraDevice::getInstance().init())
@@ -254,9 +254,9 @@ Java_org_ronhuang_vistroller_VistrollerSample_startCamera(JNIEnv *, jobject)
 
 
 JNIEXPORT void JNICALL
-Java_org_ronhuang_vistroller_VistrollerSample_stopCamera(JNIEnv *, jobject)
+Java_org_ronhuang_vistroller_Vistroller_stopCamera(JNIEnv *, jobject)
 {
-    LOG("Java_org_ronhuang_vistroller_VistrollerSample_stopCamera");
+    LOG("Java_org_ronhuang_vistroller_Vistroller_stopCamera");
 
     QCAR::Tracker::getInstance().stop();
 

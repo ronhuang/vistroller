@@ -165,11 +165,11 @@ public class VistrollerSample extends Activity implements VistrollerListener
         DebugLog.LOGD("VistrollerSample::onVistrollerStateChanged: " + state);
 
         switch (state) {
-        case VistrollerState.ENGINE_INITIALIZED:
+        case ENGINE_INITIALIZED:
             // Create OpenGL ES view:
             int depthSize = 16;
             int stencilSize = 0;
-            boolean translucent = QCAR.requiresAlpha();
+            boolean translucent = mVistroller.requiresAlpha();
 
             mGlView = new QCARSampleGLView(this);
             mGlView.init(mVistroller.getFlags(), translucent, depthSize, stencilSize);
@@ -178,7 +178,7 @@ public class VistrollerSample extends Activity implements VistrollerListener
             mGlView.setRenderer(mRenderer);
             break;
 
-        case VistrollerState.TRACKER_INITIALIZED:
+        case TRACKER_INITIALIZED:
             // The elapsed time since the splash screen was visible:
             long splashScreenTime = System.currentTimeMillis() - mSplashScreenStartTime;
             long newSplashScreenTime = 0;
@@ -208,7 +208,7 @@ public class VistrollerSample extends Activity implements VistrollerListener
             }, newSplashScreenTime);
             break;
 
-        case VistrollerState.SYSTEM_INITIALIZED:
+        case SYSTEM_INITIALIZED:
             // Hint to the virtual machine that it would be a good time to
             // run the garbage collector.
             //

@@ -80,9 +80,16 @@ public class Vistroller
 
 
     /** Get flags. */
-    public int getFlags(void)
+    public int getFlags()
     {
         return mQCARFlags;
+    }
+
+
+    /** requiresAlpha */
+    public boolean requiresAlpha()
+    {
+        return QCAR.requiresAlpha();
     }
 
 
@@ -103,7 +110,7 @@ public class Vistroller
 
 
     /** Request starting camera. */
-    public void requestStartCamera(void)
+    public void requestStartCamera()
     {
         updateApplicationStatus(STATUS_CAMERA_RUNNING);
     }
@@ -317,7 +324,7 @@ public class Vistroller
 
 
     /** Native function to initialize the application. */
-    private native void deinitApplicationNative(void);
+    private native void deinitApplicationNative();
 
 
     /** The final call you receive before your activity is destroyed.*/
