@@ -39,6 +39,22 @@ public class FrameMarkersRenderer implements GLSurfaceView.Renderer
     public native void updateRendering(int width, int height);
 
 
+    /** Native function to set activity portrait mode. */
+    public native void setActivityPortraitMode(boolean isPortrait);
+
+
+    /** Native function to set screen size. */
+    public native void setScreenSize(int width, int height);
+
+
+    /** Native function to configure project matrix. */
+    public native void configureProjectMatrix();
+
+
+    /** Native function to configure video background. */
+    public native void configureVideoBackground();
+
+
     /** Called when the surface is created or recreated. */
     public void onSurfaceCreated(GL10 gl, EGLConfig config)
     {

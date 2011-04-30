@@ -45,10 +45,6 @@ public class Vistroller
     private static final String NATIVE_LIB_VISTROLLER = "vistroller";
     private static final String NATIVE_LIB_QCAR = "QCAR";
 
-    // Display size of the device
-    private int mScreenWidth = 0;
-    private int mScreenHeight = 0;
-
     // The current application status
     private int mStatus = STATUS_UNINITED;
 
@@ -127,18 +123,6 @@ public class Vistroller
     }
 
 
-    /** Set the screen size from activity. */
-    public void setScreenSize(int width, int height)
-    {
-        mScreenWidth = width;
-        mScreenHeight = height;
-    }
-
-
-    /** Native function to initialize the application. */
-    private native void updateScreenSize(int width, int height);
-
-
     /** An async task to initialize QCAR asynchronously. */
     private class InitQCARTask extends AsyncTask<Void, Integer, Boolean>
     {
@@ -186,9 +170,6 @@ public class Vistroller
             if (result)
             {
                 Log.d(TAG, "InitQCARTask::onPostExecute: QCAR initialization" + " successful");
-
-                // Inform screen to QCAR, is it necessary?
-                updateScreenSize(mScreenWidth, mScreenHeight);
 
                 // Inform listeners.
                 triggerStateChanged(State.ENGINE_INITIALIZED);
@@ -331,10 +312,6 @@ public class Vistroller
     }
 
 
-    /** Native function to initialize the application. */
-    private native void deinitApplicationNative();
-
-
     /** The final call you receive before your activity is destroyed.*/
     protected void onDestroy()
     {
@@ -354,9 +331,6 @@ public class Vistroller
             mLoadTrackerTask.cancel(true);
             mLoadTrackerTask = null;
         }
-
-        // Do application deinitialization in native code
-        deinitApplicationNative();
 
         // Deinitialize QCAR SDK
         QCAR.deinit();

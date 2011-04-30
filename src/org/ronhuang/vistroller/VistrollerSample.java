@@ -42,10 +42,13 @@ public class VistrollerSample extends Activity implements VistrollerListener
     private static final long MIN_SPLASH_SCREEN_TIME = 2000;
 
     // The time when the splash screen has become visible:
-    long mSplashScreenStartTime = 0;
+    private long mSplashScreenStartTime = 0;
 
     // Our renderer:
     private FrameMarkersRenderer mRenderer;
+
+    // Force orientation.
+    private int mScreenOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
 
     // Log tag
     private static final String TAG = "VistrollerSample";
@@ -81,10 +84,8 @@ public class VistrollerSample extends Activity implements VistrollerListener
         //        we suggest that the activity using the QCAR SDK be locked
         //        to landscape mode if you plan to support Android 2.1 devices
         //        as well. Froyo is fine with both orientations.
-    	int screenOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
-
     	// Apply screen orientation
-    	setRequestedOrientation(screenOrientation);
+    	setRequestedOrientation(mScreenOrientation);
 
         // As long as this window is visible to the user, keep the device's
         // screen turned on and bright.
@@ -104,14 +105,6 @@ public class VistrollerSample extends Activity implements VistrollerListener
         // Create Vistroller instance.
         mVistroller = new Vistroller(this);
         mVistroller.addListener(this);
-
-    	// Pass on screen orientation info to native code.
-        mVistroller.setActivityPortraitMode(screenOrientation == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-
-        // Query display dimensions
-        DisplayMetrics metrics = new DisplayMetrics();
-        getWindowManager().getDefaultDisplay().getMetrics(metrics);
-        mVistroller.setScreenSize(metrics.widthPixels, metrics.heightPixels);
 
         // Initialize Vistroller instance.
         mVistroller.onCreate();
@@ -168,6 +161,13 @@ public class VistrollerSample extends Activity implements VistrollerListener
 
         switch (state) {
         case ENGINE_INITIALIZED:
+            // Create renderer.
+            mRenderer = new FrameMarkersRenderer();
+            mRenderer.setActivityPortraitMode(mScreenOrientation == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+            DisplayMetrics metrics = new DisplayMetrics();
+            getWindowManager().getDefaultDisplay().getMetrics(metrics);
+            mRenderer.setScreenSize(metrics.widthPixels, metrics.heightPixels);
+
             // Create OpenGL ES view:
             int depthSize = 16;
             int stencilSize = 0;
@@ -175,8 +175,6 @@ public class VistrollerSample extends Activity implements VistrollerListener
 
             mGlView = new QCARSampleGLView(this);
             mGlView.init(mVistroller.getFlags(), translucent, depthSize, stencilSize);
-
-            mRenderer = new FrameMarkersRenderer();
             mGlView.setRenderer(mRenderer);
             break;
 
@@ -195,9 +193,6 @@ public class VistrollerSample extends Activity implements VistrollerListener
                     // Hide the splash screen
                     mSplashScreenView.setVisibility(View.INVISIBLE);
 
-                    // Activate the renderer
-                    mRenderer.mIsActive = true;
-
                     // Now add the GL surface view. It is important
                     // that the OpenGL ES surface view gets added
                     // BEFORE the camera is started and video
@@ -206,6 +201,11 @@ public class VistrollerSample extends Activity implements VistrollerListener
 
                     // Start the camera:
                     mVistroller.requestStartCamera();
+
+                    // Activate the renderer
+                    mRenderer.configureProjectMatrix();
+                    mRenderer.configureVideoBackground();
+                    mRenderer.mIsActive = true;
                 }
             }, newSplashScreenTime);
             break;
