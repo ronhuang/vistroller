@@ -84,8 +84,9 @@ public class VistrollerSample extends Activity implements VistrollerListener
         //        we suggest that the activity using the QCAR SDK be locked
         //        to landscape mode if you plan to support Android 2.1 devices
         //        as well. Froyo is fine with both orientations.
-    	// Apply screen orientation
-    	setRequestedOrientation(mScreenOrientation);
+
+        // Apply screen orientation
+        setRequestedOrientation(mScreenOrientation);
 
         // As long as this window is visible to the user, keep the device's
         // screen turned on and bright.
