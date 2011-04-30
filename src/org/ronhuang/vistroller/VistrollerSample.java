@@ -23,6 +23,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.ImageView;
+import android.util.Log;
 
 
 /** The main activity for the VistrollerSample. */
@@ -46,12 +47,15 @@ public class VistrollerSample extends Activity implements VistrollerListener
     // Our renderer:
     private FrameMarkersRenderer mRenderer;
 
+    // Log tag
+    private static final String TAG = "VistrollerSample";
+
 
     /** Called when the activity first starts or the user navigates back
      * to an activity. */
     protected void onCreate(Bundle savedInstanceState)
     {
-        DebugLog.LOGD("VistrollerSample::onCreate");
+        Log.d(TAG, "VistrollerSample::onCreate");
         super.onCreate(savedInstanceState);
 
         // Set the screen orientation
@@ -117,7 +121,7 @@ public class VistrollerSample extends Activity implements VistrollerListener
    /** Called when the activity will start interacting with the user.*/
     protected void onResume()
     {
-        DebugLog.LOGD("VistrollerSample::onResume");
+        Log.d(TAG, "VistrollerSample::onResume");
         super.onResume();
 
         mVistroller.onResume();
@@ -134,7 +138,7 @@ public class VistrollerSample extends Activity implements VistrollerListener
     /** Called when the system is about to start resuming a previous activity.*/
     protected void onPause()
     {
-        DebugLog.LOGD("VistrollerSample::onPause");
+        Log.d(TAG, "VistrollerSample::onPause");
         super.onPause();
 
         if (mGlView != null)
@@ -150,7 +154,7 @@ public class VistrollerSample extends Activity implements VistrollerListener
     /** The final call you receive before your activity is destroyed.*/
     protected void onDestroy()
     {
-        DebugLog.LOGD("VistrollerSample::onDestroy");
+        Log.d(TAG, "VistrollerSample::onDestroy");
         super.onDestroy();
 
         mVistroller.onDestroy();
@@ -160,7 +164,7 @@ public class VistrollerSample extends Activity implements VistrollerListener
     /** Listen to Vistroller events. */
     public void onVistrollerStateChanged(Vistroller.State state)
     {
-        DebugLog.LOGD("VistrollerSample::onVistrollerStateChanged: " + state);
+        Log.d(TAG, "VistrollerSample::onVistrollerStateChanged: " + state);
 
         switch (state) {
         case ENGINE_INITIALIZED:

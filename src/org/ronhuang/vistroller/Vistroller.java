@@ -23,6 +23,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.AsyncTask;
+import android.util.Log;
 
 import com.qualcomm.QCAR.QCAR;
 
@@ -57,6 +58,9 @@ public class Vistroller
 
     // QCAR initialization flags
     private int mQCARFlags = 0;
+
+    // Log tag
+    private static final String TAG = "Vistroller";
 
     /** Static initializer block to load native libraries on start-up. */
     static
@@ -181,8 +185,7 @@ public class Vistroller
             // initialization status:
             if (result)
             {
-                DebugLog.LOGD("InitQCARTask::onPostExecute: QCAR initialization" +
-                                                            " successful");
+                Log.d(TAG, "InitQCARTask::onPostExecute: QCAR initialization" + " successful");
 
                 // Inform screen to QCAR, is it necessary?
                 updateScreenSize(mScreenWidth, mScreenHeight);
@@ -235,8 +238,7 @@ public class Vistroller
                 }
 
                 // Log error:
-                DebugLog.LOGE("InitQCARTask::onPostExecute: " + logMessage +
-                                " Exiting.");
+                Log.e(TAG, "InitQCARTask::onPostExecute: " + logMessage + " Exiting.");
 
                 // Show dialog box with error message:
                 dialogError.setMessage(logMessage);
@@ -275,8 +277,7 @@ public class Vistroller
 
         protected void onPostExecute(Boolean result)
         {
-            DebugLog.LOGD("LoadTrackerTask::onPostExecute: execution " +
-                        (result ? "successful" : "failed"));
+            Log.d(TAG, "LoadTrackerTask::onPostExecute: execution " + (result ? "successful" : "failed"));
 
             triggerStateChanged(State.TRACKER_INITIALIZED);
 
@@ -290,7 +291,7 @@ public class Vistroller
      * to an activity. */
     protected void onCreate()
     {
-        DebugLog.LOGD("Vistroller::onCreate");
+        Log.d(TAG, "Vistroller::onCreate");
 
         // Update the application status to start initializing application
         updateApplicationStatus(STATUS_INIT_ENGINE);
@@ -305,7 +306,7 @@ public class Vistroller
    /** Called when the activity will start interacting with the user.*/
     protected void onResume()
     {
-        DebugLog.LOGD("Vistroller::onResume");
+        Log.d(TAG, "Vistroller::onResume");
 
         // QCAR-specific resume operation
         QCAR.onResume();
@@ -320,7 +321,7 @@ public class Vistroller
     /** Called when the system is about to start resuming a previous activity.*/
     protected void onPause()
     {
-        DebugLog.LOGD("Vistroller::onPause");
+        Log.d(TAG, "Vistroller::onPause");
 
         // QCAR-specific pause operation
         QCAR.onPause();
@@ -337,7 +338,7 @@ public class Vistroller
     /** The final call you receive before your activity is destroyed.*/
     protected void onDestroy()
     {
-        DebugLog.LOGD("Vistroller::onDestroy");
+        Log.d(TAG, "Vistroller::onDestroy");
 
         // Cancel potentially running tasks
         if (mInitQCARTask != null &&
@@ -390,7 +391,7 @@ public class Vistroller
                 }
                 catch (Exception e)
                 {
-                    DebugLog.LOGE("Initializing QCAR SDK failed");
+                    Log.e(TAG, "Initializing QCAR SDK failed");
                 }
                 break;
 
@@ -406,7 +407,7 @@ public class Vistroller
                 }
                 catch (Exception e)
                 {
-                    DebugLog.LOGE("Loading tracking data set failed");
+                    Log.e(TAG, "Loading tracking data set failed");
                 }
                 break;
 
@@ -445,18 +446,16 @@ public class Vistroller
         try
         {
             System.loadLibrary(nLibName);
-            DebugLog.LOGI("Native library lib" + nLibName + ".so loaded");
+            Log.i(TAG, "Native library lib" + nLibName + ".so loaded");
             return true;
         }
         catch (UnsatisfiedLinkError ulee)
         {
-            DebugLog.LOGE("The library lib" + nLibName +
-                            ".so could not be loaded");
+            Log.e(TAG, "The library lib" + nLibName + ".so could not be loaded");
         }
         catch (SecurityException se)
         {
-            DebugLog.LOGE("The library lib" + nLibName +
-                            ".so was not allowed to be loaded");
+            Log.e(TAG, "The library lib" + nLibName + ".so was not allowed to be loaded");
         }
 
         return false;

@@ -18,6 +18,7 @@ import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
 import android.opengl.GLSurfaceView;
+import android.util.Log;
 
 import com.qualcomm.QCAR.QCAR;
 
@@ -25,6 +26,9 @@ import com.qualcomm.QCAR.QCAR;
 /** The renderer class for the FrameMarkers sample. */
 public class FrameMarkersRenderer implements GLSurfaceView.Renderer
 {
+    // Log tag
+    private static final String TAG = "FrameMarkersRenderer";
+
     public boolean mIsActive = false;
 
     /** Native function for initializing the renderer. */
@@ -38,7 +42,7 @@ public class FrameMarkersRenderer implements GLSurfaceView.Renderer
     /** Called when the surface is created or recreated. */
     public void onSurfaceCreated(GL10 gl, EGLConfig config)
     {
-        DebugLog.LOGD("GLRenderer::onSurfaceCreated");
+        Log.d(TAG, "GLRenderer::onSurfaceCreated");
 
         // Call native function to initialize rendering:
         initRendering();
@@ -52,7 +56,7 @@ public class FrameMarkersRenderer implements GLSurfaceView.Renderer
     /** Called when the surface changed size. */
     public void onSurfaceChanged(GL10 gl, int width, int height)
     {
-        DebugLog.LOGD("GLRenderer::onSurfaceChanged");
+        Log.d(TAG, "GLRenderer::onSurfaceChanged");
 
         // Call native function to update rendering when render surface parameters have changed:
         updateRendering(width, height);

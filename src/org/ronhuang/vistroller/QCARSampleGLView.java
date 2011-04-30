@@ -16,6 +16,7 @@ import javax.microedition.khronos.egl.EGLDisplay;
 import android.content.Context;
 import android.graphics.PixelFormat;
 import android.opengl.GLSurfaceView;
+import android.util.Log;
 
 
 /** QCARSampleGLView is a support class for the QCAR samples applications.
@@ -25,6 +26,9 @@ import android.opengl.GLSurfaceView;
  * */
 public class QCARSampleGLView extends GLSurfaceView
 {
+    // Log tag
+    private static final String TAG = "QCARSampleGLView";
+
     private static boolean mUseOpenGLES2 = true;
 
     /** Constructor. */
@@ -49,8 +53,8 @@ public class QCARSampleGLView extends GLSurfaceView
         // format here, using PixelFormat.TRANSLUCENT for GL Surfaces
         // is interpreted as any 32-bit surface with alpha by SurfaceFlinger.
 
-        DebugLog.LOGI("Using OpenGL ES " + (mUseOpenGLES2 ? "2.0" : "1.x"));
-        DebugLog.LOGI("Using " + (translucent ? "translucent" : "opaque") +
+        Log.i(TAG, "Using OpenGL ES " + (mUseOpenGLES2 ? "2.0" : "1.x"));
+        Log.i(TAG, "Using " + (translucent ? "translucent" : "opaque") +
             " GLView, depth buffer size: " + depth + ", stencil size: " +
             stencil);
 
@@ -84,7 +88,7 @@ public class QCARSampleGLView extends GLSurfaceView
             EGLContext context;
             if (mUseOpenGLES2)
             {
-                DebugLog.LOGI("Creating OpenGL ES 2.0 context");
+                Log.i(TAG, "Creating OpenGL ES 2.0 context");
                 checkEglError("Before eglCreateContext", egl);
                 int[] attrib_list_gl20 = {EGL_CONTEXT_CLIENT_VERSION, 2,
                     EGL10.EGL_NONE};
@@ -93,7 +97,7 @@ public class QCARSampleGLView extends GLSurfaceView
             }
             else
             {
-                DebugLog.LOGI("Creating OpenGL ES 1.x context");
+                Log.i(TAG, "Creating OpenGL ES 1.x context");
                 checkEglError("Before eglCreateContext", egl);
                 int[] attrib_list_gl1x = {EGL_CONTEXT_CLIENT_VERSION, 1,
                     EGL10.EGL_NONE};
@@ -118,7 +122,7 @@ public class QCARSampleGLView extends GLSurfaceView
         int error;
         while ((error = egl.eglGetError()) != EGL10.EGL_SUCCESS)
         {
-            DebugLog.LOGE(String.format("%s: EGL error: 0x%x", prompt, error));
+            Log.e(TAG, String.format("%s: EGL error: 0x%x", prompt, error));
         }
     }
 
