@@ -34,8 +34,7 @@ public class Vistroller
 
     // Application status constants:
     private static final int STATUS_UNINITED         = -1;
-    private static final int STATUS_INIT_APP         = 0;
-    private static final int STATUS_INIT_QCAR        = 1;
+    private static final int STATUS_INIT_ENGINE      = 1;
     private static final int STATUS_INIT_TRACKER     = 2;
     private static final int STATUS_INITED           = 3;
     private static final int STATUS_CAMERA_STOPPED   = 4;
@@ -67,6 +66,7 @@ public class Vistroller
     }
 
 
+    /** Exposed states. */
     public enum State {
         ENGINE_INITIALIZED,
         TRACKER_INITIALIZED,
@@ -293,7 +293,7 @@ public class Vistroller
         DebugLog.LOGD("Vistroller::onCreate");
 
         // Update the application status to start initializing application
-        updateApplicationStatus(STATUS_INIT_APP);
+        updateApplicationStatus(STATUS_INIT_ENGINE);
     }
 
 
@@ -378,12 +378,7 @@ public class Vistroller
         // Execute application state-specific actions
         switch (mStatus)
         {
-            case STATUS_INIT_APP:
-                // Proceed to next application initialization status
-                updateApplicationStatus(STATUS_INIT_QCAR);
-                break;
-
-            case STATUS_INIT_QCAR:
+            case STATUS_INIT_ENGINE:
                 // Initialize QCAR SDK asynchronously to avoid blocking the
                 // main (UI) thread.
                 // This task instance must be created and invoked on the UI
@@ -445,7 +440,7 @@ public class Vistroller
 
 
     /** A helper for loading native libraries stored in "libs/armeabi*". */
-    public static boolean loadLibrary(String nLibName)
+    private static boolean loadLibrary(String nLibName)
     {
         try
         {
