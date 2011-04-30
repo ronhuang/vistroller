@@ -203,9 +203,9 @@ configureVideoBackground()
 
 
 JNIEXPORT void JNICALL
-Java_org_ronhuang_vistroller_VistrollerSample_initApplicationNative(JNIEnv* env, jobject obj, jint width, jint height)
+Java_org_ronhuang_vistroller_VistrollerSample_updateScreenSize(JNIEnv* env, jobject obj, jint width, jint height)
 {
-    LOG("Java_org_ronhuang_vistroller_VistrollerSample_initApplicationNative");
+    LOG("Java_org_ronhuang_vistroller_VistrollerSample_updateScreenSize");
 
     // Store screen dimensions
     screenWidth = width;
