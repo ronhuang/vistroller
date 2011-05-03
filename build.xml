@@ -88,7 +88,7 @@
         <arg value="-a" />
         <arg value="android.intent.action.MAIN" />
         <arg value="-n" />
-        <arg value="org.ronhuang.vistroller/.VistrollerSample" />
+        <arg value="org.ronhuang.vistroller/.Demo" />
       </exec>
     </target>
 
