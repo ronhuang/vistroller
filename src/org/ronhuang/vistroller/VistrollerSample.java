@@ -24,6 +24,8 @@ import android.view.WindowManager;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.ImageView;
 import android.util.Log;
+import android.graphics.PixelFormat;
+import android.opengl.GLSurfaceView;
 
 
 /** The main activity for the VistrollerSample. */
@@ -33,7 +35,7 @@ public class VistrollerSample extends Activity implements VistrollerListener
     private Vistroller mVistroller;
 
     // Our OpenGL view:
-    private QCARSampleGLView mGlView;
+    private GLSurfaceView mGlView;
 
     // The view to display the sample splash screen:
     private ImageView mSplashScreenView;
@@ -170,12 +172,10 @@ public class VistrollerSample extends Activity implements VistrollerListener
             mRenderer.setScreenSize(metrics.widthPixels, metrics.heightPixels);
 
             // Create OpenGL ES view:
-            int depthSize = 16;
-            int stencilSize = 0;
-            boolean translucent = mVistroller.requiresAlpha();
-
-            mGlView = new QCARSampleGLView(this);
-            mGlView.init(mVistroller.getFlags(), translucent, depthSize, stencilSize);
+            mGlView = new GLSurfaceView(this);
+            mGlView.getHolder().setFormat(PixelFormat.TRANSLUCENT);
+            mGlView.setEGLContextClientVersion(2);
+            mGlView.setEGLConfigChooser(8, 8, 8, 8, 16, 0);
             mGlView.setRenderer(mRenderer);
             break;
 

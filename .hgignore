@@ -10,3 +10,5 @@
 ^test/libs/
 ^test/obj/
 ^test/local\.properties
+
+^.ant-targets-build.xml

@@ -93,13 +93,6 @@ public class Vistroller
     }
 
 
-    /** requiresAlpha */
-    public boolean requiresAlpha()
-    {
-        return QCAR.requiresAlpha();
-    }
-
-
     /** Add listener to various events. */
     public void addListener(VistrollerListener listener)
     {
