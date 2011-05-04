@@ -32,14 +32,13 @@ import android.opengl.GLSurfaceView;
 
 
 /** The main activity for the DemoActivity. */
-public class DemoActivity extends Activity implements VistrollerListener
-{
+public class DemoActivity extends Activity implements VistrollerListener {
     // Vistroller instance
     private Vistroller mVistroller;
 
     // Our views:
     private GLSurfaceView mBgView;
-    private View mFgView;
+    private DemoView mFgView;
 
     // Our renderer:
     private FrameMarkersRenderer mRenderer;
@@ -50,15 +49,10 @@ public class DemoActivity extends Activity implements VistrollerListener
     // Log tag
     private static final String TAG = "DemoActivity";
 
-    // FIXME: remove
-    // The minimum time the splash screen should be visible:
-    private static final long MIN_SPLASH_SCREEN_TIME = 2000;
-    // The time when the splash screen has become visible:
-    private long mSplashScreenStartTime = 0;
-
 
     /** Called when the activity first starts or the user navigates back
      * to an activity. */
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         Log.d(TAG, "DemoActivity::onCreate");
         super.onCreate(savedInstanceState);
@@ -82,10 +76,7 @@ public class DemoActivity extends Activity implements VistrollerListener
         mBgView.setEGLConfigChooser(8, 8, 8, 8, 16, 0);
 
         // Initialize foreground view.
-        mFgView = (View)findViewById(R.id.canvas_foreground);
-
-        // FIXME: remove
-        mSplashScreenStartTime = System.currentTimeMillis();
+        mFgView = (DemoView)findViewById(R.id.canvas_foreground);
 
         // Create and initialize Vistroller instance.
         mVistroller = new Vistroller(this);
@@ -95,6 +86,7 @@ public class DemoActivity extends Activity implements VistrollerListener
 
 
    /** Called when the activity will start interacting with the user.*/
+    @Override
     protected void onResume() {
         Log.d(TAG, "DemoActivity::onResume");
         super.onResume();
@@ -108,6 +100,7 @@ public class DemoActivity extends Activity implements VistrollerListener
 
 
     /** Called when the system is about to start resuming a previous activity.*/
+    @Override
     protected void onPause() {
         Log.d(TAG, "DemoActivity::onPause");
         super.onPause();
@@ -121,6 +114,7 @@ public class DemoActivity extends Activity implements VistrollerListener
 
 
     /** The final call you receive before your activity is destroyed.*/
+    @Override
     protected void onDestroy() {
         Log.d(TAG, "DemoActivity::onDestroy");
         super.onDestroy();
@@ -148,29 +142,13 @@ public class DemoActivity extends Activity implements VistrollerListener
             break;
 
         case TRACKER_INITIALIZED:
-            // The elapsed time since the splash screen was visible:
-            long splashScreenTime = System.currentTimeMillis() - mSplashScreenStartTime;
-            long newSplashScreenTime = 0;
-            if (splashScreenTime < MIN_SPLASH_SCREEN_TIME)
-                newSplashScreenTime = MIN_SPLASH_SCREEN_TIME - splashScreenTime;
+            // Start the camera.
+            mVistroller.requestStartCamera();
 
-            // Request a callback function after a given timeout to dismiss
-            // the splash screen:
-            Handler handler = new Handler();
-            handler.postDelayed(new Runnable() {
-                public void run() {
-                    // Hide the splash screen.
-                    mFgView.setVisibility(View.INVISIBLE);
-
-                    // Start the camera.
-                    mVistroller.requestStartCamera();
-
-                    // Activate the renderer.
-                    mRenderer.configureProjectMatrix();
-                    mRenderer.configureVideoBackground();
-                    mRenderer.mIsActive = true;
-                }
-            }, newSplashScreenTime);
+            // Activate the renderer.
+            mRenderer.configureProjectMatrix();
+            mRenderer.configureVideoBackground();
+            mRenderer.mIsActive = true;
             break;
 
         case SYSTEM_INITIALIZED:

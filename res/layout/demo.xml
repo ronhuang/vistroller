@@ -8,15 +8,8 @@
                                   android:layout_width="fill_parent"
                                   android:layout_height="fill_parent"/>
 
-    <!--
-    <SurfaceView android:id="@+id/canvas_foreground"
-                 android:layout_width="fill_parent"
-                 android:layout_height="fill_parent"/>
-    -->
-
-    <ImageView android:id="@+id/canvas_foreground"
-               android:src="@drawable/splash_screen_frame_markers"
-               android:layout_width="fill_parent"
-               android:layout_height="fill_parent"/>
+    <org.ronhuang.vistroller.DemoView android:id="@+id/canvas_foreground"
+                                      android:layout_width="fill_parent"
+                                      android:layout_height="fill_parent"/>
 
 </FrameLayout>
