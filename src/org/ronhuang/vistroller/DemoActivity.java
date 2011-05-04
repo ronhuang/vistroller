@@ -31,8 +31,8 @@ import android.graphics.PixelFormat;
 import android.opengl.GLSurfaceView;
 
 
-/** The main activity for the Demo. */
-public class Demo extends Activity implements VistrollerListener
+/** The main activity for the DemoActivity. */
+public class DemoActivity extends Activity implements VistrollerListener
 {
     // Vistroller instance
     private Vistroller mVistroller;
@@ -48,7 +48,7 @@ public class Demo extends Activity implements VistrollerListener
     private int mScreenOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
 
     // Log tag
-    private static final String TAG = "Demo";
+    private static final String TAG = "DemoActivity";
 
     // FIXME: remove
     // The minimum time the splash screen should be visible:
@@ -60,7 +60,7 @@ public class Demo extends Activity implements VistrollerListener
     /** Called when the activity first starts or the user navigates back
      * to an activity. */
     protected void onCreate(Bundle savedInstanceState) {
-        Log.d(TAG, "Demo::onCreate");
+        Log.d(TAG, "DemoActivity::onCreate");
         super.onCreate(savedInstanceState);
 
         // Specify layout
@@ -96,7 +96,7 @@ public class Demo extends Activity implements VistrollerListener
 
    /** Called when the activity will start interacting with the user.*/
     protected void onResume() {
-        Log.d(TAG, "Demo::onResume");
+        Log.d(TAG, "DemoActivity::onResume");
         super.onResume();
 
         mVistroller.onResume();
@@ -109,7 +109,7 @@ public class Demo extends Activity implements VistrollerListener
 
     /** Called when the system is about to start resuming a previous activity.*/
     protected void onPause() {
-        Log.d(TAG, "Demo::onPause");
+        Log.d(TAG, "DemoActivity::onPause");
         super.onPause();
 
         if (null != mRenderer) {
@@ -122,7 +122,7 @@ public class Demo extends Activity implements VistrollerListener
 
     /** The final call you receive before your activity is destroyed.*/
     protected void onDestroy() {
-        Log.d(TAG, "Demo::onDestroy");
+        Log.d(TAG, "DemoActivity::onDestroy");
         super.onDestroy();
 
         mVistroller.onDestroy();
@@ -131,7 +131,7 @@ public class Demo extends Activity implements VistrollerListener
 
     /** Listen to Vistroller events. */
     public void onVistrollerStateChanged(Vistroller.State state) {
-        Log.d(TAG, "Demo::onVistrollerStateChanged: " + state);
+        Log.d(TAG, "DemoActivity::onVistrollerStateChanged: " + state);
 
         switch (state) {
         case ENGINE_INITIALIZED:
