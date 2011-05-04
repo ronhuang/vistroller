@@ -56,6 +56,7 @@ public class DemoView extends View {
         mPaint.setStrokeWidth(3);
     }
 
+    @Override
     protected void onDraw(Canvas canvas) {
         canvas.drawCircle(100.0f, 100.0f, 30.0f, mPaint);
     }

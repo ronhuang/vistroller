@@ -180,6 +180,9 @@ public class VistrollerSample extends Activity implements VistrollerListener
             break;
 
         case TRACKER_INITIALIZED:
+            break;
+
+        case SYSTEM_INITIALIZED:
             // The elapsed time since the splash screen was visible:
             long splashScreenTime = System.currentTimeMillis() - mSplashScreenStartTime;
             long newSplashScreenTime = 0;
@@ -209,15 +212,6 @@ public class VistrollerSample extends Activity implements VistrollerListener
                     mRenderer.mIsActive = true;
                 }
             }, newSplashScreenTime);
-            break;
-
-        case SYSTEM_INITIALIZED:
-            // Hint to the virtual machine that it would be a good time to
-            // run the garbage collector.
-            //
-            // NOTE: This is only a hint. There is no guarantee that the
-            // garbage collector will actually be run.
-            System.gc();
             break;
 
         default:

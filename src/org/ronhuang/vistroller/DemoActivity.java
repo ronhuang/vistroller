@@ -142,6 +142,9 @@ public class DemoActivity extends Activity implements VistrollerListener {
             break;
 
         case TRACKER_INITIALIZED:
+            break;
+
+        case SYSTEM_INITIALIZED:
             // Start the camera.
             mVistroller.requestStartCamera();
 
@@ -149,15 +152,6 @@ public class DemoActivity extends Activity implements VistrollerListener {
             mRenderer.configureProjectMatrix();
             mRenderer.configureVideoBackground();
             mRenderer.mIsActive = true;
-            break;
-
-        case SYSTEM_INITIALIZED:
-            // Hint to the virtual machine that it would be a good time to
-            // run the garbage collector.
-            //
-            // NOTE: This is only a hint. There is no guarantee that the
-            // garbage collector will actually be run.
-            System.gc();
             break;
 
         default:

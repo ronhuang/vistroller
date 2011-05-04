@@ -112,6 +112,8 @@ public class Vistroller
     /** Request starting camera. */
     public void requestStartCamera()
     {
+        Log.d(TAG, "Vistroller::requestStartCamera");
+
         updateApplicationStatus(STATUS_CAMERA_RUNNING);
     }
 
@@ -336,6 +338,8 @@ public class Vistroller
      * access by Vistroller::onResume() and InitQCARTask::onPostExecute(). */
     private synchronized void updateApplicationStatus(int appStatus)
     {
+        Log.d(TAG, "Vistroller::updateApplicationStatus (from " + mStatus + " to " + appStatus + ")");
+
         // Exit if there is no change in status
         if (mStatus == appStatus)
             return;
@@ -379,6 +383,8 @@ public class Vistroller
                 break;
 
             case STATUS_INITED:
+                triggerStateChanged(State.SYSTEM_INITIALIZED);
+
                 // Hint to the virtual machine that it would be a good time to
                 // run the garbage collector.
                 //
@@ -401,10 +407,6 @@ public class Vistroller
                 throw new RuntimeException("Invalid application state");
         }
     }
-
-
-    /** Tells native code whether we are in portait or landscape mode */
-    public native void setActivityPortraitMode(boolean isPortrait);
 
 
     /** A helper for loading native libraries stored in "libs/armeabi*". */
