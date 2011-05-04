@@ -143,6 +143,7 @@ public class Demo extends Activity implements VistrollerListener
             mRenderer.setScreenSize(metrics.widthPixels, metrics.heightPixels);
 
             // Apply renderer to background view.
+            mBgView.setVisibility(View.VISIBLE);
             mBgView.setRenderer(mRenderer);
             break;
 
