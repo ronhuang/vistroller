@@ -17,16 +17,14 @@
 
 package org.ronhuang.vistroller;
 
-import android.view.SurfaceView;
-import android.view.SurfaceHolder;
+import android.view.View;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.util.AttributeSet;
 
 
-public class DemoView extends SurfaceView implements SurfaceHolder.Callback {
-    private DemoViewThread mThread;
+public class DemoView extends View {
     private Paint mPaint;
 
     public DemoView(Context context) {
@@ -56,28 +54,9 @@ public class DemoView extends SurfaceView implements SurfaceHolder.Callback {
         mPaint.setStrokeJoin(Paint.Join.ROUND);
         mPaint.setStrokeCap(Paint.Cap.ROUND);
         mPaint.setStrokeWidth(3);
-
-        getHolder().addCallback(this);
     }
 
-    public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-    }
-
-    public void surfaceCreated(SurfaceHolder holder) {
-        if (null == mThread || !mThread.isAlive()) {
-            mThread = new DemoViewThread(this);
-            mThread.setRunning(true);
-            mThread.start();
-        }
-    }
-
-    public void surfaceDestroyed(SurfaceHolder holder) {
-        if (mThread.isAlive()) {
-            mThread.setRunning(false);
-        }
-    }
-
-    public void doDraw(Canvas canvas) {
+    protected void onDraw(Canvas canvas) {
         canvas.drawCircle(100.0f, 100.0f, 30.0f, mPaint);
     }
 }
