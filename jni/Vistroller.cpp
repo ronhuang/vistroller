@@ -71,6 +71,27 @@ Java_org_ronhuang_vistroller_Vistroller_stopCamera(JNIEnv *, jobject)
 }
 
 
+JNIEXPORT void JNICALL
+Java_org_ronhuang_vistroller_Vistroller_startTracking(JNIEnv *, jobject)
+{
+    LOG("Java_org_ronhuang_vistroller_Vistroller_startTracking");
+}
+
+
+JNIEXPORT void JNICALL
+Java_org_ronhuang_vistroller_Vistroller_stopTracking(JNIEnv *, jobject)
+{
+    LOG("Java_org_ronhuang_vistroller_Vistroller_stopTracking");
+}
+
+
+JNIEXPORT void JNICALL
+Java_org_ronhuang_vistroller_Vistroller_getTrackable(JNIEnv *, jobject)
+{
+    LOG("Java_org_ronhuang_vistroller_Vistroller_getTrackable");
+}
+
+
 #ifdef __cplusplus
 }
 #endif

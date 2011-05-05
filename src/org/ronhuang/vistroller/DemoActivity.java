@@ -37,11 +37,7 @@ public class DemoActivity extends Activity implements VistrollerListener {
     private Vistroller mVistroller;
 
     // Our views:
-    private GLSurfaceView mBgView;
     private DemoView mFgView;
-
-    // Our renderer:
-    private FrameMarkersRenderer mRenderer;
 
     // Force orientation.
     private int mScreenOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
@@ -69,14 +65,8 @@ public class DemoActivity extends Activity implements VistrollerListener {
             WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON,
             WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
-        // Initialize background view.
-        mBgView = (GLSurfaceView)findViewById(R.id.camera_background);
-        mBgView.getHolder().setFormat(PixelFormat.TRANSLUCENT);
-        mBgView.setEGLContextClientVersion(2);
-        mBgView.setEGLConfigChooser(8, 8, 8, 8, 16, 0);
-
         // Initialize foreground view.
-        mFgView = (DemoView)findViewById(R.id.canvas_foreground);
+        mFgView = (DemoView)findViewById(R.id.canvas);
 
         // Create and initialize Vistroller instance.
         mVistroller = new Vistroller(this);
@@ -92,10 +82,6 @@ public class DemoActivity extends Activity implements VistrollerListener {
         super.onResume();
 
         mVistroller.onResume();
-        if (null != mRenderer) {
-            mBgView.setVisibility(View.VISIBLE);
-            mBgView.onResume();
-        }
     }
 
 
@@ -105,10 +91,6 @@ public class DemoActivity extends Activity implements VistrollerListener {
         Log.d(TAG, "DemoActivity::onPause");
         super.onPause();
 
-        if (null != mRenderer) {
-            mBgView.setVisibility(View.INVISIBLE);
-            mBgView.onPause();
-        }
         mVistroller.onPause();
     }
 
@@ -129,16 +111,6 @@ public class DemoActivity extends Activity implements VistrollerListener {
 
         switch (state) {
         case ENGINE_INITIALIZED:
-            // Create renderer.
-            mRenderer = new FrameMarkersRenderer();
-            mRenderer.setActivityPortraitMode(mScreenOrientation == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-            DisplayMetrics metrics = new DisplayMetrics();
-            getWindowManager().getDefaultDisplay().getMetrics(metrics);
-            mRenderer.setScreenSize(metrics.widthPixels, metrics.heightPixels);
-
-            // Apply renderer to background view.
-            mBgView.setVisibility(View.VISIBLE);
-            mBgView.setRenderer(mRenderer);
             break;
 
         case TRACKER_INITIALIZED:
@@ -146,12 +118,7 @@ public class DemoActivity extends Activity implements VistrollerListener {
 
         case SYSTEM_INITIALIZED:
             // Start the camera.
-            mVistroller.requestStartCamera();
-
-            // Activate the renderer.
-            mRenderer.configureProjectMatrix();
-            mRenderer.configureVideoBackground();
-            mRenderer.mIsActive = true;
+            mVistroller.start();
             break;
 
         default:

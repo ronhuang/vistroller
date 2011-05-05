@@ -24,6 +24,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.util.Log;
+import android.view.KeyEvent;
 
 import com.qualcomm.QCAR.QCAR;
 
@@ -51,6 +52,7 @@ public class Vistroller
     // The async tasks to initialize the QCAR SDK
     private InitQCARTask mInitQCARTask;
     private LoadTrackerTask mLoadTrackerTask;
+    private TrackingTask mTrackingTask;
 
     // QCAR initialization flags
     private int mQCARFlags = 0;
@@ -110,11 +112,20 @@ public class Vistroller
 
 
     /** Request starting camera. */
-    public void requestStartCamera()
+    public void start()
     {
-        Log.d(TAG, "Vistroller::requestStartCamera");
+        Log.d(TAG, "Vistroller::start");
 
         updateApplicationStatus(STATUS_CAMERA_RUNNING);
+    }
+
+
+    /** Request starting camera. */
+    public void stop()
+    {
+        Log.d(TAG, "Vistroller::stop");
+
+        updateApplicationStatus(STATUS_CAMERA_STOPPED);
     }
 
 
@@ -263,6 +274,53 @@ public class Vistroller
     }
 
 
+    /** Native methods for tracking. */
+    private native void startTracking();
+    private native void stopTracking();
+    private native void getTrackable();
+
+
+    /** An async task to track and post trackables to UI thread. */
+    private class TrackingTask extends AsyncTask<Void, KeyEvent, Boolean> {
+        protected void onPreExecute() {
+            // Start tracker
+            startTracking();
+        }
+
+
+        protected Boolean doInBackground(Void... params) {
+            do {
+                // Retrieve trackables
+                getTrackable();
+
+                // translate to KeyEvent
+                KeyEvent event = null;
+
+                // publish to UI
+                publishProgress(event);
+            } while (!isCancelled());
+
+            return true;
+        }
+
+
+        protected void onProgressUpdate(KeyEvent... values) {
+        }
+
+
+        protected void onPostExecute(Boolean result) {
+            // Stop tracker
+            stopTracking();
+        }
+
+
+        protected void onCancelled(Boolean result) {
+            // Stop tracker
+            stopTracking();
+        }
+    }
+
+
     /** Called when the activity first starts or the user navigates back
      * to an activity. */
     protected void onCreate()
@@ -325,6 +383,13 @@ public class Vistroller
         {
             mLoadTrackerTask.cancel(true);
             mLoadTrackerTask = null;
+        }
+
+        if (mTrackingTask != null &&
+            mTrackingTask.getStatus() != TrackingTask.Status.FINISHED)
+        {
+            mTrackingTask.cancel(true);
+            mTrackingTask = null;
         }
 
         // Deinitialize QCAR SDK
@@ -394,6 +459,13 @@ public class Vistroller
                 break;
 
             case STATUS_CAMERA_STOPPED:
+                // Cancel existing tracking task if exist
+                if (null != mTrackingTask) {
+                    if (TrackingTask.Status.FINISHED != mTrackingTask.getStatus())
+                        mTrackingTask.cancel(true);
+                    mTrackingTask = null;
+                }
+
                 // Call the native function to stop the camera
                 stopCamera();
                 break;
@@ -401,6 +473,21 @@ public class Vistroller
             case STATUS_CAMERA_RUNNING:
                 // Call the native function to start the camera
                 startCamera();
+
+                // Cancel existing tracking task if exist
+                if (null != mTrackingTask) {
+                    if (TrackingTask.Status.FINISHED != mTrackingTask.getStatus())
+                        mTrackingTask.cancel(true);
+                    mTrackingTask = null;
+                }
+
+                // Start tracking task.
+                try {
+                    mTrackingTask = new TrackingTask();
+                    mTrackingTask.execute();
+                } catch (Exception e) {
+                    Log.e(TAG, "TrackingTask failed to initialize");
+                }
                 break;
 
             default:
