@@ -274,16 +274,15 @@ public class Vistroller
     }
 
 
-    /** Native methods for tracking. */
+    /** Native methods for retrieving trackable. */
     private native void startTracking();
     private native void stopTracking();
-    private native void getTrackable();
+    private native Trackable getTrackable();
 
 
     /** An async task to track and post trackables to UI thread. */
     private class TrackingTask extends AsyncTask<Void, KeyEvent, Boolean> {
         protected void onPreExecute() {
-            // Start tracker
             startTracking();
         }
 
@@ -291,7 +290,17 @@ public class Vistroller
         protected Boolean doInBackground(Void... params) {
             do {
                 // Retrieve trackables
-                getTrackable();
+                Trackable tt = getTrackable();
+
+                if (!tt.isValid()) {
+                    try {
+                        // FIXME: is this necessary?
+                        Thread.sleep(100);
+                    } catch(InterruptedException ie) {
+                        // Do nothing.
+                    }
+                    continue;
+                }
 
                 // translate to KeyEvent
                 KeyEvent event = null;
@@ -309,13 +318,11 @@ public class Vistroller
 
 
         protected void onPostExecute(Boolean result) {
-            // Stop tracker
             stopTracking();
         }
 
 
         protected void onCancelled(Boolean result) {
-            // Stop tracker
             stopTracking();
         }
     }
@@ -330,11 +337,6 @@ public class Vistroller
         // Update the application status to start initializing application
         updateApplicationStatus(STATUS_INIT_ENGINE);
     }
-
-
-    /** Native methods for starting and stoping the camera. */
-    private native void startCamera();
-    private native void stopCamera();
 
 
    /** Called when the activity will start interacting with the user.*/
@@ -465,15 +467,9 @@ public class Vistroller
                         mTrackingTask.cancel(true);
                     mTrackingTask = null;
                 }
-
-                // Call the native function to stop the camera
-                stopCamera();
                 break;
 
             case STATUS_CAMERA_RUNNING:
-                // Call the native function to start the camera
-                startCamera();
-
                 // Cancel existing tracking task if exist
                 if (null != mTrackingTask) {
                     if (TrackingTask.Status.FINISHED != mTrackingTask.getStatus())
