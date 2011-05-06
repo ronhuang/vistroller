@@ -18,6 +18,10 @@ package org.ronhuang.vistroller;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Queue;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.HashMap;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -25,6 +29,9 @@ import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.os.SystemClock;
+import android.view.IWindowManager;
+import android.os.ServiceManager;
 
 import com.qualcomm.QCAR.QCAR;
 
@@ -282,6 +289,113 @@ public class Vistroller
 
     /** An async task to track and post trackables to UI thread. */
     private class TrackingTask extends AsyncTask<Void, KeyEvent, Boolean> {
+        private int[] mKeyDownCounts = null;
+        private Queue<Marker>[] mMarkerQueues = null;
+        private Map<Short, Byte> mIdToSlotMap = null;
+        private Map<Short, Integer> mIdToCodeMap = null;
+        private IWindowManager mWindowManager = null;
+
+        // Queue size.
+        private final int kQueueSize = 3;
+        // Support at most this much of key events at the same time.
+        private final byte kQueueCount = 5;
+
+
+        public TrackingTask() {
+            byte i;
+
+            mMarkerQueues = new LinkedList<Marker>[kQueueCount];
+            for (i = 0; i < kQueueCount; i++)
+                mMarkerQueues[i] = new LinkedList<Marker>();
+
+            mKeyDownCounts = new int[kQueueCount];
+            for (i = 0; i < kQueueCount; i++)
+                mKeyDownCounts[i] = 0;
+
+            mIdToSlotMap = new HashMap<Short, Byte>();
+
+            mIdToCodeMap = new HashMap<Short, Integer>();
+            // Load from resource
+
+
+            mWindowManager = IWindowManager.Stub.asInterface(ServiceManager.getService("window"));
+        }
+
+
+        private byte getSlot(short id) {
+            Byte b = mIdToSlotMap.get(id);
+            if (null != b)
+                return b.byteValue();
+
+            // Allocate new slot if possible
+            for (byte i = 0; i < kQueueCount; i++) {
+                Queue<Marker> q = mMarkerQueues[i];
+                if (q.isEmpty()) {
+                    mIdToSlotMap.put(id, i);
+                    return i;
+                }
+            }
+
+            // no available slot found
+            return -1;
+        }
+
+
+        private void freeSlot(short id) {
+            Byte b = mIdToSlotMap.get(id);
+            if (null == b)
+                return;
+            mIdToSlotMap.remove(id);
+
+            byte slot = b.byteValue();
+            Queue<Marker> q = mMarkerQueues[slot];
+            if (null == q)
+                return;
+            q.clear();
+        }
+
+
+        // while (queue.size >= kQueueSize)
+        //     pop queue
+        // push marker to queue
+        private void trackMarker(byte slot, Marker marker) {
+            if (slot < 0)
+                return;
+
+            Queue<Marker> q = mMarkerQueues[slot];
+            while (q.size() >= kQueueSize)
+                // make room for new marker
+                q.remove();
+            q.offer(marker);
+        }
+
+
+        private int getKeyDownCount(byte slot) {
+            if (slot < 0)
+                return -1;
+
+            return mKeyDownCounts[slot];
+        }
+
+
+        private int incrKeyDownCount(byte slot) {
+            if (slot < 0)
+                return -1;
+
+            int count = mKeyDownCounts[slot] + 1;
+            mKeyDownCounts[slot] = count;
+            return count;
+        }
+
+
+        private void resetKeyDownCount(byte slot) {
+            if (slot < 0)
+                return;
+
+            mKeyDownCounts[slot] = 0;
+        }
+
+
         protected void onPreExecute() {
             startTracking();
         }
@@ -289,24 +403,54 @@ public class Vistroller
 
         protected Boolean doInBackground(Void... params) {
             do {
-                // Retrieve trackables
+                // Retrieve markers
                 Marker marker = getMarker();
 
-                if (!marker.isValid()) {
-                    try {
-                        // FIXME: is this necessary?
-                        Thread.sleep(100);
-                    } catch(InterruptedException ie) {
-                        // Do nothing.
-                    }
-                    continue;
-                }
+                short id = marker.getId();
+                byte slot = getSlot(id);
 
-                // translate to KeyEvent
+                if (slot < 0)
+                    // run out available queue.
+                    continue;
+
+                int keycode = mIdToCodeMap.get(id);
+                int count = getKeyDownCount(slot);
+                Queue<Marker> q = mMarkerQueues[slot];
                 KeyEvent event = null;
 
-                // publish to UI
-                publishProgress(event);
+                // if (marker is valid)
+                //     increae mKeyDownCount by 1 and inject key down event.
+                // else if (marker is invalid) and (mKeyDownCount > 0) and (at least one markers in queue same as current marker)
+                //     reset mKeyDownCount and inject key up event.
+                if (marker.isValid()) {
+                    long eventTime = SystemClock.uptimeMillis();
+                    long downTime = eventTime; //FIXME: should be in C?
+
+                    event = new KeyEvent(downTime,
+                                         eventTime,
+                                         KeyEvent.ACTION_DOWN,
+                                         keycode,
+                                         count);
+                    mWindowManager.injectKeyEvent(event, true);
+
+                    incrKeyDownCount(slot);
+                } else if (!marker.isValid() && (count > 0) && !q.contains(marker)) {
+                    long eventTime = SystemClock.uptimeMillis();
+                    long downTime = eventTime; //FIXME: should be in C?
+
+                    event = new KeyEvent(downTime,
+                                         eventTime,
+                                         KeyEvent.ACTION_UP,
+                                         keycode,
+                                         0);
+                    mWindowManager.injectKeyEvent(event, true);
+
+                    resetKeyDownCount(slot);
+                    freeSlot(id);
+                    slot = -1; // no need to keep track of this slot
+                }
+
+                trackMarker(slot, marker);
             } while (!isCancelled());
 
             return true;
