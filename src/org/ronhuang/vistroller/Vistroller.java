@@ -299,6 +299,8 @@ public class Vistroller
         private final int kQueueSize = 3;
         // Support at most this much of key events at the same time.
         private final byte kQueueCount = 5;
+        // sleep time
+        private final long kSleep = 50;
 
 
         public TrackingTask() {
@@ -415,6 +417,12 @@ public class Vistroller
             do {
                 // Retrieve markers
                 Marker marker = getMarker();
+
+                try {
+                    Thread.currentThread().sleep(kSleep);
+                } catch (InterruptedException ie) {
+                    // Do nothing.
+                }
 
                 short id = marker.getId();
                 byte slot = getSlot(id);
