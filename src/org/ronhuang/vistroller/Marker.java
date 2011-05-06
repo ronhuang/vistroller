@@ -17,15 +17,17 @@
 package org.ronhuang.vistroller;
 
 
-public class Trackable
+public class Marker
 {
     private short mId = -1;
     private float[] mPose;
+    private float[] mSize;
 
 
-    public Trackable(short id, float[] pose) {
+    public Marker(short id, float[] pose, float[] size) {
         mId = id;
         mPose = pose;
+        mSize = size;
     }
 
 
@@ -36,6 +38,11 @@ public class Trackable
 
     public float[] getPose() {
         return mPose;
+    }
+
+
+    public float[] getSize() {
+        return mSize;
     }
 
 

@@ -277,7 +277,7 @@ public class Vistroller
     /** Native methods for retrieving trackable. */
     private native void startTracking();
     private native void stopTracking();
-    private native Trackable getTrackable();
+    private native Marker getMarker();
 
 
     /** An async task to track and post trackables to UI thread. */
@@ -290,9 +290,9 @@ public class Vistroller
         protected Boolean doInBackground(Void... params) {
             do {
                 // Retrieve trackables
-                Trackable tt = getTrackable();
+                Marker marker = getMarker();
 
-                if (!tt.isValid()) {
+                if (!marker.isValid()) {
                     try {
                         // FIXME: is this necessary?
                         Thread.sleep(100);

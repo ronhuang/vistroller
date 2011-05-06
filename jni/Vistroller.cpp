@@ -25,6 +25,9 @@
 #include <QCAR/CameraDevice.h>
 #include <QCAR/Tracker.h>
 #include <QCAR/Trackable.h>
+#include <QCAR/VideoBackgroundConfig.h>
+#include <QCAR/Renderer.h>
+#include <QCAR/Marker.h>
 
 
 // Utility for logging:
@@ -37,6 +40,77 @@ extern "C"
 #endif
 
 
+jobject
+newMarker(JNIEnv *env, const short id, const float *pose_data, const float *size_data)
+{
+    static jclass cls = NULL;
+    static jmethodID cid = NULL;
+    jobject result = NULL;
+    jfloatArray pose = NULL;
+    jfloatArray size = NULL;
+
+    // Cache cls
+    if (NULL == cls) {
+        jclass lcls = env->FindClass("org/ronhuang/vistroller/Marker");
+        if (NULL == lcls)
+            return NULL;
+        cls = static_cast<jclass>(env->NewGlobalRef(static_cast<jobject>(lcls)));
+        env->DeleteLocalRef(lcls);
+        if (NULL == cls)
+            return NULL;
+    }
+
+    // Cache cid
+    if (NULL == cid) {
+        cid = env->GetMethodID(cls, "<init>", "(S[F[F)V");
+        if (NULL == cid)
+            return NULL;
+    }
+
+    // Create pose
+    pose = env->NewFloatArray(3 * 4);
+    if (NULL == pose)
+        return NULL;
+    env->SetFloatArrayRegion(pose, 0, 3 * 4, pose_data);
+
+    // Create size
+    size = env->NewFloatArray(2);
+    if (NULL == size)
+        return NULL;
+    env->SetFloatArrayRegion(size, 0, 2, size_data);
+
+    // Invoke constructor.
+    result = env->NewObject(cls, cid, id, pose, size);
+
+    // Free local reference.
+    env->DeleteLocalRef(pose);
+    env->DeleteLocalRef(size);
+
+    return result;
+}
+
+
+void
+configureVideoBackground()
+{
+    // Get the default video mode:
+    QCAR::CameraDevice& cameraDevice = QCAR::CameraDevice::getInstance();
+    QCAR::VideoMode videoMode = cameraDevice.getVideoMode(QCAR::CameraDevice::MODE_DEFAULT);
+
+    // Configure the video background
+    QCAR::VideoBackgroundConfig config;
+    config.mEnabled = false;
+    config.mSynchronous = false;
+    config.mPosition.data[0] = 0.0f;
+    config.mPosition.data[1] = 0.0f;
+    config.mSize.data[0] = videoMode.mWidth;
+    config.mSize.data[1] = videoMode.mHeight;
+
+    // Set the config:
+    QCAR::Renderer::getInstance().setVideoBackgroundConfig(config);
+}
+
+
 JNIEXPORT void JNICALL
 Java_org_ronhuang_vistroller_Vistroller_startTracking(JNIEnv *, jobject)
 {
@@ -45,6 +119,9 @@ Java_org_ronhuang_vistroller_Vistroller_startTracking(JNIEnv *, jobject)
     // Initialize the camera:
     if (!QCAR::CameraDevice::getInstance().init())
         return;
+
+    // Configure the video background
+    configureVideoBackground();
 
     // Select the default mode:
     if (!QCAR::CameraDevice::getInstance().selectVideoMode(
@@ -56,7 +133,8 @@ Java_org_ronhuang_vistroller_Vistroller_startTracking(JNIEnv *, jobject)
         return;
 
     // Start the tracker:
-    QCAR::Tracker::getInstance().start();
+    if (!QCAR::Tracker::getInstance().start())
+        return;
 }
 
 
@@ -66,83 +144,42 @@ Java_org_ronhuang_vistroller_Vistroller_stopTracking(JNIEnv *, jobject)
     LOG("Java_org_ronhuang_vistroller_Vistroller_stopTracking");
 
     QCAR::Tracker::getInstance().stop();
-
     QCAR::CameraDevice::getInstance().stop();
     QCAR::CameraDevice::getInstance().deinit();
 }
 
 
-jobject
-newTrackable(JNIEnv *env, const short id, const float *data)
-{
-    static jclass cls = NULL;
-    static jmethodID cid = NULL;
-    jobject result = NULL;
-    jfloatArray pose = NULL;
-
-    // Cache cls
-    if (NULL == cls) {
-        jclass lcls = env->FindClass("org/ronhuang/vistroller/Trackable");
-        if (NULL == lcls)
-            return NULL;
-        cls = static_cast<jclass>(env->NewGlobalRef(static_cast<jobject>(lcls)));
-        env->DeleteLocalRef(lcls);
-        if (NULL == cls)
-            return NULL;
-    }
-
-    // Cache cid
-    if (NULL == cid) {
-        cid = env->GetMethodID(cls, "<init>", "(S[F)V");
-        if (NULL == cid)
-            return NULL;
-    }
-
-    // Create pose
-    pose = env->NewFloatArray(3 * 4);
-    if (NULL == pose)
-        return NULL;
-    env->SetFloatArrayRegion(pose, 0, 3 * 4, data);
-
-    // Invoke constructor.
-    result = env->NewObject(cls, cid, id, pose);
-
-    // Free local reference.
-    env->DeleteLocalRef(pose);
-
-    return result;
-}
-
-
 JNIEXPORT jobject JNICALL
-Java_org_ronhuang_vistroller_Vistroller_getTrackable(JNIEnv *env, jobject)
+Java_org_ronhuang_vistroller_Vistroller_getMarker(JNIEnv *env, jobject)
 {
-    LOG("Java_org_ronhuang_vistroller_Vistroller_getTrackable");
+    //LOG("Java_org_ronhuang_vistroller_Vistroller_getMarker");
 
-    const QCAR::Tracker &tracker = QCAR::Tracker::getInstance();
-    const int count = tracker.getNumActiveTrackables();
-    const QCAR::Trackable *trackable = NULL;
     jobject result = NULL;
 
-    for (int i = 0; i < count; i++) {
-        trackable = tracker.getActiveTrackable(i);
-        if (QCAR::Trackable::TRACKED != trackable->getStatus())
-            continue;
+    QCAR::State state = QCAR::Renderer::getInstance().begin();
 
-        result = newTrackable(env, trackable->getId(), trackable->getPose().data);
+    for (int i = 0; i < state.getNumActiveTrackables(); i++) {
+        const QCAR::Trackable *trackable = state.getActiveTrackable(i);
+        assert(trackable->getType() == QCAR::Trackable::MARKER);
+        const QCAR::Marker *marker = static_cast<const QCAR::Marker*>(trackable);
+
+        result = newMarker(env, marker->getMarkerId(), marker->getPose().data, marker->getSize().data);
         break; // FIXME: return only the first one for now.
     }
 
     if (NULL == result) {
         // Make sure always return an instance of Trackable.
         // Return invalid one.
-        float data[3 * 4] = {
+        float pose[3 * 4] = {
             0, 0, 0, 0,
             0, 0, 0, 0,
             0, 0, 0, 0
         };
-        result = newTrackable(env, -1, data);
+        float size[2] = {0, 0};
+        result = newMarker(env, -1, pose, size);
     }
+
+    QCAR::Renderer::getInstance().end();
 
     return result;
 }
