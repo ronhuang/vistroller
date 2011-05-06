@@ -52,31 +52,41 @@ newMarker(JNIEnv *env, const short id, const float *pose_data, const float *size
     // Cache cls
     if (NULL == cls) {
         jclass lcls = env->FindClass("org/ronhuang/vistroller/Marker");
-        if (NULL == lcls)
+        if (NULL == lcls) {
+            LOG("org/ronhuang/vistroller/Marker not found");
             return NULL;
+        }
         cls = static_cast<jclass>(env->NewGlobalRef(static_cast<jobject>(lcls)));
         env->DeleteLocalRef(lcls);
-        if (NULL == cls)
+        if (NULL == cls) {
+            LOG("cls not global referenced");
             return NULL;
+        }
     }
 
     // Cache cid
     if (NULL == cid) {
         cid = env->GetMethodID(cls, "<init>", "(S[F[F)V");
-        if (NULL == cid)
+        if (NULL == cid) {
+            LOG("Constructor not found");
             return NULL;
+        }
     }
 
     // Create pose
     pose = env->NewFloatArray(3 * 4);
-    if (NULL == pose)
+    if (NULL == pose) {
+        LOG("pose not created");
         return NULL;
+    }
     env->SetFloatArrayRegion(pose, 0, 3 * 4, pose_data);
 
     // Create size
     size = env->NewFloatArray(2);
-    if (NULL == size)
+    if (NULL == size) {
+        LOG("size not created");
         return NULL;
+    }
     env->SetFloatArrayRegion(size, 0, 2, size_data);
 
     // Invoke constructor.

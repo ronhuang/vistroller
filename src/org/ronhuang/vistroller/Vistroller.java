@@ -18,8 +18,8 @@ package org.ronhuang.vistroller;
 
 import java.util.List;
 import java.util.ArrayList;
-import java.util.Queue;
 import java.util.LinkedList;
+import java.util.Queue;
 import java.util.Map;
 import java.util.HashMap;
 
@@ -182,7 +182,7 @@ public class Vistroller
             // initialization status:
             if (result)
             {
-                Log.d(TAG, "InitQCARTask::onPostExecute: QCAR initialization" + " successful");
+                Log.d(TAG, "InitQCARTask::onPostExecute: QCAR initialization successful");
 
                 // Inform listeners.
                 triggerStateChanged(State.ENGINE_INITIALIZED);
@@ -290,7 +290,7 @@ public class Vistroller
     /** An async task to track and post trackables to UI thread. */
     private class TrackingTask extends AsyncTask<Void, KeyEvent, Boolean> {
         private int[] mKeyDownCounts = null;
-        private Queue<Marker>[] mMarkerQueues = null;
+        private List<Queue<Marker>> mMarkerQueues = null;
         private Map<Short, Byte> mIdToSlotMap = null;
         private Map<Short, Integer> mIdToCodeMap = null;
         private IWindowManager mWindowManager = null;
@@ -304,9 +304,9 @@ public class Vistroller
         public TrackingTask() {
             byte i;
 
-            mMarkerQueues = new LinkedList<Marker>[kQueueCount];
+            mMarkerQueues = new ArrayList<Queue<Marker>>();
             for (i = 0; i < kQueueCount; i++)
-                mMarkerQueues[i] = new LinkedList<Marker>();
+                mMarkerQueues.add(new LinkedList<Marker>());
 
             mKeyDownCounts = new int[kQueueCount];
             for (i = 0; i < kQueueCount; i++)
@@ -315,7 +315,11 @@ public class Vistroller
             mIdToSlotMap = new HashMap<Short, Byte>();
 
             mIdToCodeMap = new HashMap<Short, Integer>();
-            // Load from resource
+            // TODO:Load from resource
+            mIdToCodeMap.put((short)0, KeyEvent.KEYCODE_0);
+            mIdToCodeMap.put((short)1, KeyEvent.KEYCODE_1);
+            mIdToCodeMap.put((short)2, KeyEvent.KEYCODE_2);
+            mIdToCodeMap.put((short)3, KeyEvent.KEYCODE_3);
 
 
             mWindowManager = IWindowManager.Stub.asInterface(ServiceManager.getService("window"));
@@ -323,13 +327,16 @@ public class Vistroller
 
 
         private byte getSlot(short id) {
+            if (id < 0)
+                return -1;
+
             Byte b = mIdToSlotMap.get(id);
             if (null != b)
                 return b.byteValue();
 
             // Allocate new slot if possible
             for (byte i = 0; i < kQueueCount; i++) {
-                Queue<Marker> q = mMarkerQueues[i];
+                Queue<Marker> q = mMarkerQueues.get(i);
                 if (q.isEmpty()) {
                     mIdToSlotMap.put(id, i);
                     return i;
@@ -342,13 +349,16 @@ public class Vistroller
 
 
         private void freeSlot(short id) {
+            if (id < 0)
+                return;
+
             Byte b = mIdToSlotMap.get(id);
             if (null == b)
                 return;
             mIdToSlotMap.remove(id);
 
             byte slot = b.byteValue();
-            Queue<Marker> q = mMarkerQueues[slot];
+            Queue<Marker> q = mMarkerQueues.get(slot);
             if (null == q)
                 return;
             q.clear();
@@ -362,7 +372,7 @@ public class Vistroller
             if (slot < 0)
                 return;
 
-            Queue<Marker> q = mMarkerQueues[slot];
+            Queue<Marker> q = mMarkerQueues.get(slot);
             while (q.size() >= kQueueSize)
                 // make room for new marker
                 q.remove();
@@ -415,7 +425,7 @@ public class Vistroller
 
                 int keycode = mIdToCodeMap.get(id);
                 int count = getKeyDownCount(slot);
-                Queue<Marker> q = mMarkerQueues[slot];
+                Queue<Marker> q = mMarkerQueues.get(slot);
                 KeyEvent event = null;
 
                 // if (marker is valid)

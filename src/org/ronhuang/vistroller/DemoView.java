@@ -22,10 +22,12 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.util.AttributeSet;
+import android.view.KeyEvent;
 
 
 public class DemoView extends View {
     private Paint mPaint;
+    private String mShowOnScreen;
 
     public DemoView(Context context) {
         super(context);
@@ -54,10 +56,21 @@ public class DemoView extends View {
         mPaint.setStrokeJoin(Paint.Join.ROUND);
         mPaint.setStrokeCap(Paint.Cap.ROUND);
         mPaint.setStrokeWidth(3);
+
+        mPaint.setTextSize(30.0f);
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
         canvas.drawCircle(100.0f, 100.0f, 30.0f, mPaint);
+
+        if (null != mShowOnScreen)
+            canvas.drawText(mShowOnScreen, 200.0f, 200.0f, mPaint);
+    }
+
+    @Override
+    public boolean onKeyUp(int keyCode, KeyEvent event) {
+        mShowOnScreen = String.format("%d", keyCode);
+        return true;
     }
 }

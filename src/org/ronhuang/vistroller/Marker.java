@@ -16,6 +16,8 @@
 
 package org.ronhuang.vistroller;
 
+import java.util.Arrays;
+
 
 public class Marker
 {
@@ -48,5 +50,15 @@ public class Marker
 
     public boolean isValid() {
         return mId >= 0;
+    }
+
+
+    @Override
+    public boolean equals(Object o) {
+        Marker m = (Marker)o;
+
+        return mId == m.getId() &&
+            Arrays.equals(mPose, m.getPose()) &&
+            Arrays.equals(mSize, m.getSize());
     }
 }
