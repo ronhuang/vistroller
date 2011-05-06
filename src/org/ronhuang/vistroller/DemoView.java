@@ -23,11 +23,15 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.util.AttributeSet;
 import android.view.KeyEvent;
+import android.util.Log;
 
 
 public class DemoView extends View {
     private Paint mPaint;
     private String mShowOnScreen;
+
+    // Log tag
+    private static final String TAG = "DemoView";
 
     public DemoView(Context context) {
         super(context);
@@ -70,6 +74,8 @@ public class DemoView extends View {
 
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent event) {
+        Log.d(TAG, "DemoView::onKeyUp: " + keyCode);
+
         mShowOnScreen = String.format("%d", keyCode);
         return true;
     }
