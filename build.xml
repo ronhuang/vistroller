@@ -76,7 +76,7 @@
     <target name="-install-apk">
       <exec executable="adb" dir="${out.dir}" failonerror="true">
         <arg value="install" />
-        <arg value="Vistroller-debug.apk" />
+        <arg value="${ant.project.name}-debug.apk" />
       </exec>
     </target>
 
