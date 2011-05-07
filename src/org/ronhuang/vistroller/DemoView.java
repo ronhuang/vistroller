@@ -84,6 +84,8 @@ public class DemoView extends View {
         Log.d(TAG, "DemoView::onKeyUp: " + keyCode);
 
         mShowOnScreen = String.format("%d", keyCode);
+        invalidate();
+
         return false;
     }
 }
