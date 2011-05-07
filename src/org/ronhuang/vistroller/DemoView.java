@@ -73,10 +73,17 @@ public class DemoView extends View {
     }
 
     @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        Log.d(TAG, "DemoView::onKeyDown: " + keyCode);
+
+        return false;
+    }
+
+    @Override
     public boolean onKeyUp(int keyCode, KeyEvent event) {
         Log.d(TAG, "DemoView::onKeyUp: " + keyCode);
 
         mShowOnScreen = String.format("%d", keyCode);
-        return true;
+        return false;
     }
 }

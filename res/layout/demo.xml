@@ -5,6 +5,8 @@
 
     <org.ronhuang.vistroller.DemoView android:id="@+id/canvas"
                                       android:background="#00000000"
+                                      android:focusable="true"
+                                      android:focusableInTouchMode="true"
                                       android:layout_width="fill_parent"
                                       android:layout_height="fill_parent"/>
 
