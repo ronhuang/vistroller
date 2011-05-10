@@ -65,42 +65,12 @@
       </exec>
     </target>
 
-    <!-- Deploy debug apk to device -->
-    <target name="-uninstall-apk">
-      <exec executable="adb">
-        <arg value="uninstall" />
-        <arg value="org.ronhuang.vistroller" />
-      </exec>
-    </target>
-
-    <target name="-install-apk">
-      <exec executable="adb" dir="${out.dir}" failonerror="true">
-        <arg value="install" />
-        <arg value="${ant.project.name}-debug.apk" />
-      </exec>
-    </target>
-
-    <target name="-start-apk">
-      <exec executable="adb" failonerror="true">
-        <arg value="shell" />
-        <arg value="am" />
-        <arg value="start" />
-        <arg value="-a" />
-        <arg value="android.intent.action.MAIN" />
-        <arg value="-n" />
-        <arg value="org.ronhuang.vistroller/.DemoActivity" />
-      </exec>
-    </target>
-
-    <target name="debug-deploy" depends="-uninstall-apk, -install-apk, -start-apk">
-    </target>
 
 <!-- extension targets. Uncomment the ones where you want to do custom work
      in between standard targets -->
-    <target name="-pre-build" depends="-build-jni, -copy-qcar">
-    </target>
-
 <!--
+    <target name="-pre-build">
+    </target>
     <target name="-pre-compile">
     </target>
 

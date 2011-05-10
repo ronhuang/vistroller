@@ -10,5 +10,10 @@
 ^test/libs/
 ^test/obj/
 ^test/local\.properties
+^samples/readkey/bin/
+^samples/readkey/gen/
+^samples/readkey/libs/
+^samples/readkey/obj/
+^samples/readkey/local\.properties
 
 ^.ant-targets-build.xml

@@ -1,7 +1,17 @@
 #==============================================================================
-#            Copyright (c) 2010 QUALCOMM Incorporated.
-#            All Rights Reserved.
-#            Qualcomm Confidential and Proprietary
+# Copyright (C) 2011 Ron Huang
+#
+# Licensed under the Apache License, Version 2.0 (the "License"); you may not
+# use this file except in compliance with the License. You may obtain a copy of
+# the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+# WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+# License for the specific language governing permissions and limitations under
+# the License.
 #==============================================================================
 
 
@@ -40,30 +50,23 @@ TARGET_PLATFORM := android-5
 
 LOCAL_C_INCLUDES := $(QCAR_SDK_ROOT)/build/include
 
-# This sample always uses OpenGL ES 2.0.
-OPENGLES_LIB  := -lGLESv2
-OPENGLES_DEF  := -DUSE_OPENGL_ES_2_0
-
 # An optional set of compiler flags that will be passed when building
 # C ***AND*** C++ source files.
 #
 # NOTE: flag "-Wno-write-strings" removes warning about deprecated conversion
-#       from string constant to ‘char*’
+#       from string constant to char*
 
-LOCAL_CFLAGS := -Wno-write-strings $(OPENGLES_DEF)
+LOCAL_CFLAGS := -Wno-write-strings
 
 # The list of additional linker flags to be used when building your
 # module. This is useful to pass the name of specific system libraries
 # with the "-l" prefix.
 
-# The following resolves cygwin paths problem caused by the ndk-r5
 QCAR_LOCAL_PATH := $(QCAR_SDK_ROOT)/build/lib/$(TARGET_ARCH_ABI)
 
 LOCAL_LDLIBS := \
     -L$(QCAR_LOCAL_PATH) \
-    -llog -lQCAR \
-	$(OPENGLES_LIB)
-
+    -llog -lQCAR
 
 # The LOCAL_SRC_FILES variables must contain a list of C and/or C++ source
 # files that will be built and assembled into a module. Note that you should
@@ -71,7 +74,7 @@ LOCAL_LDLIBS := \
 # compute dependencies automatically for you; just list the source files
 # that will be passed directly to a compiler, and you should be good.
 
-LOCAL_SRC_FILES := Vistroller.cpp SampleUtils.cpp
+LOCAL_SRC_FILES := Vistroller.cpp
 
 # By default, ARM target binaries will be generated in 'thumb' mode, where
 # each instruction are 16-bit wide. You can define this variable to 'arm'
