@@ -29,6 +29,8 @@ import android.util.Log;
 public class DemoView extends View {
     private Paint mPaint;
     private String mShowOnScreen;
+    private long mPreviousKeyDownTime = 0;
+    private String mFrequency;
 
     // Log tag
     private static final String TAG = "DemoView";
@@ -66,7 +68,8 @@ public class DemoView extends View {
 
     @Override
     protected void onDraw(Canvas canvas) {
-        canvas.drawCircle(100.0f, 100.0f, 30.0f, mPaint);
+        if (null != mFrequency)
+            canvas.drawText(mFrequency, 100.0f, 100.0f, mPaint);
 
         if (null != mShowOnScreen)
             canvas.drawText(mShowOnScreen, 200.0f, 200.0f, mPaint);
@@ -74,7 +77,15 @@ public class DemoView extends View {
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
+        long interval = event.getEventTime() - mPreviousKeyDownTime;
+        mPreviousKeyDownTime = event.getEventTime();
+
         Log.d(TAG, "DemoView::onKeyDown: " + keyCode);
+
+        if (interval > 0) {
+            mFrequency = String.format("Key down frequency: %01.2f keys/second", 1000f / interval);
+            invalidate();
+        }
 
         return false;
     }
