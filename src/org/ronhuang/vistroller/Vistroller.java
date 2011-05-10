@@ -383,7 +383,7 @@ public class Vistroller
 
     /** Called when the activity first starts or the user navigates back
      * to an activity. */
-    protected void onCreate()
+    public void onCreate()
     {
         Log.d(TAG, "Vistroller::onCreate");
 
@@ -393,7 +393,7 @@ public class Vistroller
 
 
    /** Called when the activity will start interacting with the user.*/
-    protected void onResume()
+    public void onResume()
     {
         Log.d(TAG, "Vistroller::onResume");
 
@@ -408,7 +408,7 @@ public class Vistroller
 
 
     /** Called when the system is about to start resuming a previous activity.*/
-    protected void onPause()
+    public void onPause()
     {
         Log.d(TAG, "Vistroller::onPause");
 
@@ -421,7 +421,7 @@ public class Vistroller
 
 
     /** The final call you receive before your activity is destroyed.*/
-    protected void onDestroy()
+    public void onDestroy()
     {
         Log.d(TAG, "Vistroller::onDestroy");
 

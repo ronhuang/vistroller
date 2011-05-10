@@ -39,7 +39,7 @@
 
     <!-- QCAR library -->
     <target name="-copy-qcar">
-        <copy file="${qcar.sdk.dir}/build/java/QCAR/QCAR.jar" todir="${jar.libs.dir}" />
+        <copy file="${qcar.sdk.dir}/build/java/QCAR/QCAR.jar" todir="${external.libs.dir}" />
         <copy file="${qcar.sdk.dir}/build/lib/armeabi/libQCAR.so" todir="${native.libs.dir}/armeabi" />
         <copy file="${qcar.sdk.dir}/build/lib/armeabi-v7a/libQCAR.so" todir="${native.libs.dir}/armeabi-v7a" />
     </target>
@@ -71,9 +71,11 @@
 <!--
     <target name="-pre-build">
     </target>
-    <target name="-pre-compile">
+-->
+    <target name="-pre-compile" depends="-build-jni, -copy-qcar">
     </target>
 
+<!--
     [This is typically used for code obfuscation.
      Compiled code location: ${out.classes.absolute.dir}
      If this is not done in place, override ${out.dex.input.absolute.dir}]
@@ -104,5 +106,8 @@
              - customize to your needs.
     -->
     <setup />
+
+    <path id="android.libraries.src"><path refid="project.libraries.src" /></path>
+    <path id="android.libraries.jars"><path refid="project.libraries.jars" /></path>
 
 </project>
