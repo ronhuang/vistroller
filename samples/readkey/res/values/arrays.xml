@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <array name="vistroller_mapping">
+    <item>@array/vistroller_mapping_0</item>
+    <item>@array/vistroller_mapping_1</item>
+    <item>@array/vistroller_mapping_2</item>
+    <item>@array/vistroller_mapping_3</item>
+  </array>
+
+  <string-array name="vistroller_mapping_0">
+    <item>0</item>
+    <item>KEYCODE_C</item>
+  </string-array>
+
+  <string-array name="vistroller_mapping_1">
+    <item>1</item>
+    <item>KEYCODE_A</item>
+  </string-array>
+
+  <string-array name="vistroller_mapping_2">
+    <item>2</item>
+    <item>KEYCODE_F</item>
+  </string-array>
+
+  <string-array name="vistroller_mapping_3">
+    <item>3</item>
+    <item>KEYCODE_E</item>
+  </string-array>
+</resources>

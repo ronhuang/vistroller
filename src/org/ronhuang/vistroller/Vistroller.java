@@ -22,6 +22,7 @@ import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Map;
 import java.util.HashMap;
+import java.lang.reflect.Field;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -32,6 +33,8 @@ import android.view.KeyEvent;
 import android.os.SystemClock;
 import android.view.IWindowManager;
 import android.os.ServiceManager;
+import android.content.res.Resources;
+import android.content.res.TypedArray;
 
 import com.qualcomm.QCAR.QCAR;
 
@@ -299,12 +302,8 @@ public class Vistroller
 
 
         public TrackingTask() {
-            // TODO:Load from resource
-            mIdToCodeMap = new HashMap<Short, Integer>();
-            mIdToCodeMap.put((short)0, KeyEvent.KEYCODE_0);
-            mIdToCodeMap.put((short)1, KeyEvent.KEYCODE_1);
-            mIdToCodeMap.put((short)2, KeyEvent.KEYCODE_2);
-            mIdToCodeMap.put((short)3, KeyEvent.KEYCODE_3);
+            // Load from resource
+            mIdToCodeMap = loadMapFromResource(R.array.vistroller_mapping);
 
             mWindowManager = IWindowManager.Stub.asInterface(ServiceManager.getService("window"));
         }
@@ -564,5 +563,46 @@ public class Vistroller
         }
 
         return false;
+    }
+
+
+    /** Load id-to-keycode map from resource. */
+    private Map<Short, Integer> loadMapFromResource(int id) {
+        Resources res = mActivity.getResources();
+        TypedArray mappings = res.obtainTypedArray(id);
+        Class cls = null;
+        Map<Short, Integer> map = new HashMap<Short, Integer>();
+
+        try {
+            cls = Class.forName("android.view.KeyEvent");
+        } catch (ClassNotFoundException cnfe) {
+            return map;
+        }
+
+        for (int i = 0; i < mappings.length(); i++) {
+            int aid = mappings.getResourceId(i, 0);
+            String[] mapping = res.getStringArray(aid);
+
+            short marker_id = Short.parseShort(mapping[0]);
+            int keycode = 0;
+
+            try {
+                Field fld = cls.getDeclaredField(mapping[1]);
+                keycode = fld.getInt(null);
+            } catch (NoSuchFieldException nsfe) {
+                continue;
+            } catch (IllegalAccessException iae) {
+                continue;
+            }
+
+            Log.d(TAG, String.format("loadMapFromResource:%d:%s:%s:%d:%d",
+                                     i,
+                                     mapping[0], mapping[1],
+                                     marker_id, keycode));
+
+            map.put(marker_id, keycode);
+        }
+
+        return map;
     }
 }
