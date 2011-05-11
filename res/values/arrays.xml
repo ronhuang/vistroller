@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <!-- This resource is not used, it's here to make the library compile. -->
+  <array name="vistroller_mapping">
+  </array>
+</resources>

@@ -174,8 +174,13 @@ public class Vistroller
 
         protected void onProgressUpdate(Integer... values)
         {
+            Log.d(TAG, "InitQCARTask::onProgressUpdate " + values[0].intValue());
+
             // Do something with the progress value "values[0]", e.g. update
             // splash screen, progress bar, etc.
+            for (int i = 0; i < mListeners.size(); i++) {
+                mListeners.get(i).onVistrollerProgressUpdate(values[0].intValue() / 2);
+            }
         }
 
 
@@ -267,8 +272,13 @@ public class Vistroller
 
         protected void onProgressUpdate(Integer... values)
         {
+            Log.d(TAG, "LoadTrackerTask::onProgressUpdate " + values[0].intValue());
+
             // Do something with the progress value "values[0]", e.g. update
             // splash screen, progress bar, etc.
+            for (int i = 0; i < mListeners.size(); i++) {
+                mListeners.get(i).onVistrollerProgressUpdate(50 + values[0].intValue() / 2);
+            }
         }
 
 
@@ -362,10 +372,6 @@ public class Vistroller
             } while (!isCancelled());
 
             return true;
-        }
-
-
-        protected void onProgressUpdate(KeyEvent... values) {
         }
 
 
@@ -583,7 +589,7 @@ public class Vistroller
             int aid = mappings.getResourceId(i, 0);
             String[] mapping = res.getStringArray(aid);
 
-            short marker_id = Short.parseShort(mapping[0]);
+            short markerId = Short.parseShort(mapping[0]);
             int keycode = 0;
 
             try {
@@ -598,9 +604,9 @@ public class Vistroller
             Log.d(TAG, String.format("loadMapFromResource:%d:%s:%s:%d:%d",
                                      i,
                                      mapping[0], mapping[1],
-                                     marker_id, keycode));
+                                     markerId, keycode));
 
-            map.put(marker_id, keycode);
+            map.put(markerId, keycode);
         }
 
         return map;
