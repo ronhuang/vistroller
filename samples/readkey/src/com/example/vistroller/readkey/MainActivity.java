@@ -29,7 +29,10 @@ import org.ronhuang.vistroller.VistrollerListener;
 
 /** The main activity for the MainActivity. */
 public class MainActivity extends Activity implements VistrollerListener {
-    // Vistroller instance
+    // Handler to view.
+    MainView mView;
+
+    // Vistroller instance.
     private Vistroller mVistroller;
 
     // Force orientation.
@@ -62,6 +65,9 @@ public class MainActivity extends Activity implements VistrollerListener {
         mVistroller = new Vistroller(this);
         mVistroller.addListener(this);
         mVistroller.onCreate();
+
+        // Handler to view.
+        mView = (MainView)findViewById(R.id.canvas);
     }
 
 
@@ -114,5 +120,11 @@ public class MainActivity extends Activity implements VistrollerListener {
         default:
             break;
         }
+    }
+
+
+    /** Update progress. */
+    public void onVistrollerProgressUpdate(int progress) {
+        mView.setProgress(progress);
     }
 }

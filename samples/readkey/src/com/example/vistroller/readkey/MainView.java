@@ -24,13 +24,17 @@ import android.graphics.Paint;
 import android.util.AttributeSet;
 import android.view.KeyEvent;
 import android.util.Log;
+import android.os.Handler;
 
 
 public class MainView extends View {
     private Paint mPaint;
+    private Paint mSolidPaint;
     private String mShowOnScreen;
     private long mPreviousKeyDownTime = 0;
     private String mFrequency;
+    private int mProgress;
+    private boolean mShowProgress;
 
     // Log tag
     private static final String TAG = "MainView";
@@ -66,18 +70,58 @@ public class MainView extends View {
         mPaint.setStrokeJoin(Paint.Join.ROUND);
         mPaint.setStrokeCap(Paint.Cap.ROUND);
         mPaint.setStrokeWidth(1);
-
         mPaint.setTextSize(30.0f);
+
+        mSolidPaint = new Paint(mPaint);
+        mSolidPaint.setStyle(Paint.Style.FILL);
+    }
+
+
+    protected void setProgress(int progress) {
+        mProgress = progress;
+        mShowProgress = true;
+
+        Log.d(TAG, String.format("setProgress:%d", progress));
+
+        invalidate();
+
+        if (mProgress >= 100) {
+            Handler handler = new Handler();
+            handler.postDelayed(
+                new Runnable() {
+                    public void run() {
+                        mShowProgress = false;
+                        invalidate();
+                    }
+                }, 500);
+        }
     }
 
 
     @Override
     protected void onDraw(Canvas canvas) {
         if (null != mFrequency)
-            canvas.drawText(mFrequency, 100.0f, 100.0f, mPaint);
+            canvas.drawText(mFrequency, 100.0f, 100.0f, mSolidPaint);
 
         if (null != mShowOnScreen)
-            canvas.drawText(mShowOnScreen, 200.0f, 200.0f, mPaint);
+            canvas.drawText(mShowOnScreen, 200.0f, 200.0f, mSolidPaint);
+
+        if (mShowProgress) {
+            int blockSize = 40;
+            int gapSize = 10;
+            int blockCount = 10;
+
+            float y = (getHeight() - blockSize) / 2f;
+            float x = (getWidth() - blockSize * blockCount - gapSize * (blockCount - 1)) / 2f;
+
+            for (int i = 0; i < blockCount; i++) {
+                float left = x + i * (blockSize + gapSize);
+                if (i * 100 <= mProgress * blockCount)
+                    canvas.drawRect(left, y, left + blockSize, y + blockSize, mSolidPaint);
+                else
+                    canvas.drawRect(left, y, left + blockSize, y + blockSize, mPaint);
+            }
+        }
     }
 
 
