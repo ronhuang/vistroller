@@ -45,7 +45,7 @@
     </target>
 
     <target name="clean-qcar">
-        <delete file="${jar.libs.dir}/QCAR.jar" />
+        <delete file="${external.libs.dir}/QCAR.jar" />
         <delete file="${native.libs.dir}/armeabi/libQCAR.so" />
         <delete file="${native.libs.dir}/armeabi-v7a/libQCAR.so" />
     </target>
