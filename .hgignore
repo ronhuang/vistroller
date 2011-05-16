@@ -19,3 +19,8 @@
 ^samples/readkey/local\.properties
 ^samples/readkey/\.ant-targets-build\.xml
 
+shield/.*\.sym~
+shield/.*\.cmd
+shield/.*\.net
+shield/.*\.sch~
+shield/.*\.pcb-

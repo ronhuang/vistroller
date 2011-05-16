@@ -1,0 +1,3 @@
+schematics vistroller-shield.sch
+output-name vistroller-shield
+elements-dir ./footprints
