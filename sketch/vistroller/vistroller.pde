@@ -7,45 +7,55 @@ PS2X ps2x; // create PS2 Controller Class
 //or call config_gamepad(pins) again after connecting the controller.
 int error = 0;
 byte type = 0;
-byte count = 0;
 int ledPin = 13;
+int errorCount = 0;
+
+void waitForResponse() {
+    bool high = true;
+
+    while (Serial.available() <= 0) {
+        digitalWrite(ledPin, high ? HIGH : LOW);
+        high = !high;
+        delay(50);
+    }
+
+    digitalWrite(ledPin, LOW);
+}
 
 void osdPrint(const char *str) {
-    byte buf[] = {0x73, 0x00, 0x00, 0x00, 0xFF};
+    byte buf[] = {0x73, 0x00, 0x00, 0x01, 0xFF, 0xFF};
     Serial.write(buf, sizeof(buf)); // cmd
     Serial.write(str); // string
+
+    waitForResponse();
+
+    if (0x06 != Serial.read())
+        error = 0x900 + 0x73;
 }
 
 void osdPrintln(const char *str) {
     osdPrint(str);
-    Serial.write("\n");
 }
 
 void setup() {
-    Serial.begin(115200);
-
-    // LED onboard.
+    // Initialize LED onboard.
     pinMode(ledPin, OUTPUT);
 
-    // Initialize OLCD to display debug message.
+    // Wait OLED to warmup.
     delay(500);
+
+    //
+    Serial.begin(115200);
+
+    // Initialize OLED to display debug message.
+    // AutoBaud
     Serial.write(0x55);
 
-    // AutoBaud
-    digitalWrite(ledPin, HIGH);
-    count = 100;
-    while (count) {
-        if (Serial.available() > 0 && 0x06 == Serial.read()) {
-            // AutoBaud set.
-            digitalWrite(ledPin, LOW);
-            break;
-        }
-        delay(10);
-        count--;
-    }
+    waitForResponse();
 
-    if (count == 0) {
+    if (0x06 != Serial.read()) {
         // Failed to initialize.
+        error = 0x900 + 0x55;
         return;
     }
 
@@ -53,20 +63,20 @@ void setup() {
 
     error = ps2x.config_gamepad(7,9,8,6, false, false);   //setup pins and settings:  GamePad(clock, command, attention, data, Pressures?, Rumble?) check for error
 
-    if(error == 0){
+    if (error == 0) {
         osdPrintln("Found Controller, configured successful");
         osdPrintln("Try out all the buttons, X will vibrate the controller, faster as you press harder;");
         osdPrintln("holding L1 or R1 will print out the analog stick values.");
         osdPrintln("Go to www.billporter.info for updates and to report bugs.");
     }
 
-    else if(error == 1)
+    else if (error == 1)
         osdPrintln("No controller found, check wiring, see readme.txt to enable debug. visit www.billporter.info for troubleshooting tips");
 
-    else if(error == 2)
+    else if (error == 2)
         osdPrintln("Controller found but not accepting commands. see readme.txt to enable debug. Visit www.billporter.info for troubleshooting tips");
 
-    else if(error == 3)
+    else if (error == 3)
         osdPrintln("Controller refusing to enter Pressures mode, may not support it. ");
 
     //osdPrint(ps2x.Analog(1), HEX);
@@ -96,64 +106,58 @@ void loop() {
 
 
 
-    if(error == 1) //skip loop if no controller found
+    if (error > 0) { //skip loop if no controller found
+        errorCount++;
+        digitalWrite(ledPin, (errorCount % 2) == 0 ? HIGH : LOW);
+        delay(1000);
         return;
+    }
 
-    if(type == 2){ //Guitar Hero Controller
-    } else { //DualShock Controller
+    ps2x.read_gamepad(false, 0);          //read controller and set large motor to spin at 'vibrate' speed
 
-        ps2x.read_gamepad(false, 0);          //read controller and set large motor to spin at 'vibrate' speed
-
-        if(ps2x.Button(PSB_START))                   //will be TRUE as long as button is pressed
-            osdPrintln("Start is being held");
-        if(ps2x.Button(PSB_SELECT))
-            osdPrintln("Select is being held");
+    if(ps2x.Button(PSB_START))                   //will be TRUE as long as button is pressed
+        osdPrintln("Start is being held");
+    if(ps2x.Button(PSB_SELECT))
+        osdPrintln("Select is being held");
 
 
-        if(ps2x.Button(PSB_PAD_UP)) {         //will be TRUE as long as button is pressed
-            osdPrint("Up held this hard: ");
-        }
-        if(ps2x.Button(PSB_PAD_RIGHT)){
-            osdPrint("Right held this hard: ");
-        }
-        if(ps2x.Button(PSB_PAD_LEFT)){
-            osdPrint("LEFT held this hard: ");
-        }
-        if(ps2x.Button(PSB_PAD_DOWN)){
-            osdPrint("DOWN held this hard: ");
-        }
-
-
-        if (ps2x.NewButtonState())               //will be TRUE if any button changes state (on to off, or off to on)
-        {
-
-
-
-            if(ps2x.Button(PSB_L3))
-                osdPrintln("L3 pressed");
-            if(ps2x.Button(PSB_R3))
-                osdPrintln("R3 pressed");
-            if(ps2x.Button(PSB_L2))
-                osdPrintln("L2 pressed");
-            if(ps2x.Button(PSB_R2))
-                osdPrintln("R2 pressed");
-            if(ps2x.Button(PSB_GREEN))
-                osdPrintln("Triangle pressed");
-
-        }
-
-
-        if(ps2x.ButtonPressed(PSB_RED))             //will be TRUE if button was JUST pressed
-            osdPrintln("Circle just pressed");
-
-        if(ps2x.ButtonReleased(PSB_PINK))             //will be TRUE if button was JUST released
-            osdPrintln("Square just released");
-
-        if(ps2x.NewButtonState(PSB_BLUE))            //will be TRUE if button was JUST pressed OR released
-            osdPrintln("X just changed");
+    if(ps2x.Button(PSB_PAD_UP)) {         //will be TRUE as long as button is pressed
+        osdPrint("Up held this hard: ");
+    }
+    if(ps2x.Button(PSB_PAD_RIGHT)){
+        osdPrint("Right held this hard: ");
+    }
+    if(ps2x.Button(PSB_PAD_LEFT)){
+        osdPrint("LEFT held this hard: ");
+    }
+    if(ps2x.Button(PSB_PAD_DOWN)){
+        osdPrint("DOWN held this hard: ");
     }
 
 
-    delay(50);
+    if (ps2x.NewButtonState()) { //will be TRUE if any button changes state (on to off, or off to on)
+        if(ps2x.Button(PSB_L3))
+            osdPrintln("L3 pressed");
+        if(ps2x.Button(PSB_R3))
+            osdPrintln("R3 pressed");
+        if(ps2x.Button(PSB_L2))
+            osdPrintln("L2 pressed");
+        if(ps2x.Button(PSB_R2))
+            osdPrintln("R2 pressed");
+        if(ps2x.Button(PSB_GREEN))
+            osdPrintln("Triangle pressed");
+    }
 
+
+    if(ps2x.ButtonPressed(PSB_RED))             //will be TRUE if button was JUST pressed
+        osdPrintln("Circle just pressed");
+
+    if(ps2x.ButtonReleased(PSB_PINK))             //will be TRUE if button was JUST released
+        osdPrintln("Square just released");
+
+    if(ps2x.NewButtonState(PSB_BLUE))            //will be TRUE if button was JUST pressed OR released
+        osdPrintln("X just changed");
+
+
+    delay(50);
 }
