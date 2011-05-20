@@ -1,7 +1,7 @@
 #ifndef __MARKERS__
 #define __MARKERS__
 
-byte markers[] = {
+const byte markers[] = {
     /* frameMarker_000.png */
     0,1,1,0,1,1,0,1,1,1,0,0,0,0,1,0,0,1,0,1,1,1,0,0,1,0,1,1,1,1,0,0,1,0,0,0,
     /* frameMarker_001.png */
