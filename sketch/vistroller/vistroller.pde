@@ -8,28 +8,37 @@ PS2X ps2x; // create PS2 Controller Class
 int error = 0;
 byte type = 0;
 int ledPin = 13;
-int errorCount = 0;
 
-void waitForResponse() {
+// Wait for response from serial port.
+// default is wait forever (count == -1)
+void waitForResponse(int count = -1, int delayTime = 50) {
     bool high = true;
 
     while (Serial.available() <= 0) {
+        if (count >= 0)
+            if (count-- == 0)
+                break;
+
         digitalWrite(ledPin, high ? HIGH : LOW);
         high = !high;
-        delay(50);
+        delay(delayTime);
     }
 
     digitalWrite(ledPin, LOW);
 }
 
 void osdPrint(const char *str) {
-    byte buf[] = {0x73, 0x00, 0x00, 0x01, 0xFF, 0xFF};
+    byte resp;
+
+    byte buf[] = {0x73, 0x00, 0x00, 0x00, 0xFF, 0xFF};
     Serial.write(buf, sizeof(buf)); // cmd
     Serial.write(str); // string
+    Serial.print(0x00, BYTE);
 
     waitForResponse();
 
-    if (0x06 != Serial.read())
+    resp = Serial.read();
+    if (0x06 != resp)
         error = 0x900 + 0x73;
 }
 
@@ -42,22 +51,42 @@ void setup() {
     pinMode(ledPin, OUTPUT);
 
     // Wait OLED to warmup.
-    delay(500);
+    delay(2000);
 
     //
     Serial.begin(115200);
 
     // Initialize OLED to display debug message.
     // AutoBaud
-    Serial.write(0x55);
+    int delayTime = 50;
+    while (true) {
+        Serial.write(0x55);
 
-    waitForResponse();
+        waitForResponse(10, delayTime);
+        delayTime += 10;
 
-    if (0x06 != Serial.read()) {
-        // Failed to initialize.
-        error = 0x900 + 0x55;
-        return;
+        byte resp = Serial.read();
+        if (0x06 == resp)
+            break;
     }
+
+    // Background color
+    Serial.print(0x4B, BYTE);
+    Serial.print(0xFF, BYTE);
+    Serial.print(0xE0, BYTE);
+    waitForResponse();
+    Serial.read();
+
+    // Clear background
+    Serial.print(0x45, BYTE);
+    waitForResponse();
+    Serial.read();
+
+    // Opaque
+    Serial.print(0x4F, BYTE);
+    Serial.print(0x01, BYTE);
+    waitForResponse();
+    Serial.read();
 
     //CHANGES for v1.6 HERE!!! **************PAY ATTENTION*************
 
@@ -107,8 +136,9 @@ void loop() {
 
 
     if (error > 0) { //skip loop if no controller found
-        errorCount++;
-        digitalWrite(ledPin, (errorCount % 2) == 0 ? HIGH : LOW);
+        static bool high = true;
+        digitalWrite(ledPin, high ? HIGH : LOW);
+        high = !high;
         delay(1000);
         return;
     }
