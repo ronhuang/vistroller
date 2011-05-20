@@ -1,5 +1,7 @@
 #include <PS2X_lib.h>  //for v1.6
 
+#define DEBUG_LED_PIN 13
+
 PS2X ps2x; // create PS2 Controller Class
 
 //right now, the library does NOT support hot pluggable controllers, meaning
@@ -7,39 +9,9 @@ PS2X ps2x; // create PS2 Controller Class
 //or call config_gamepad(pins) again after connecting the controller.
 int error = 0;
 byte type = 0;
-int ledPin = 13;
-
-// Wait for response from serial port.
-// default is wait forever (count == -1)
-void waitForResponse(int count = -1, int delayTime = 50) {
-    bool high = true;
-
-    while (Serial.available() <= 0) {
-        if (count >= 0)
-            if (count-- == 0)
-                break;
-
-        digitalWrite(ledPin, high ? HIGH : LOW);
-        high = !high;
-        delay(delayTime);
-    }
-
-    digitalWrite(ledPin, LOW);
-}
 
 void osdPrint(const char *str) {
-    byte resp;
-
-    byte buf[] = {0x73, 0x00, 0x00, 0x00, 0xFF, 0xFF};
-    Serial.write(buf, sizeof(buf)); // cmd
-    Serial.write(str); // string
-    Serial.print(0x00, BYTE);
-
-    waitForResponse();
-
-    resp = Serial.read();
-    if (0x06 != resp)
-        error = 0x900 + 0x73;
+    OLED_DrawText(0, 0, 0, str, 0xFFFF);
 }
 
 void osdPrintln(const char *str) {
@@ -48,45 +20,19 @@ void osdPrintln(const char *str) {
 
 void setup() {
     // Initialize LED onboard.
-    pinMode(ledPin, OUTPUT);
+    pinMode(DEBUG_LED_PIN, OUTPUT);
 
-    // Wait OLED to warmup.
-    delay(2000);
-
-    //
+    // OLED serial port.
     Serial.begin(115200);
 
-    // Initialize OLED to display debug message.
-    // AutoBaud
-    int delayTime = 50;
-    while (true) {
-        Serial.write(0x55);
 
-        waitForResponse(10, delayTime);
-        delayTime += 10;
+    // OLED
+    OLED_Init();
+    OLED_Background(0xFFE0);
+    OLED_Clear();
+    OLED_SetTextTrans(0x01);
 
-        byte resp = Serial.read();
-        if (0x06 == resp)
-            break;
-    }
 
-    // Background color
-    Serial.print(0x4B, BYTE);
-    Serial.print(0xFF, BYTE);
-    Serial.print(0xE0, BYTE);
-    waitForResponse();
-    Serial.read();
-
-    // Clear background
-    Serial.print(0x45, BYTE);
-    waitForResponse();
-    Serial.read();
-
-    // Opaque
-    Serial.print(0x4F, BYTE);
-    Serial.print(0x01, BYTE);
-    waitForResponse();
-    Serial.read();
 
     //CHANGES for v1.6 HERE!!! **************PAY ATTENTION*************
 
@@ -137,7 +83,7 @@ void loop() {
 
     if (error > 0) { //skip loop if no controller found
         static bool high = true;
-        digitalWrite(ledPin, high ? HIGH : LOW);
+        digitalWrite(DEBUG_LED_PIN, high ? HIGH : LOW);
         high = !high;
         delay(1000);
         return;
