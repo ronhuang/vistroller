@@ -54,7 +54,7 @@ def main():
     print """#ifndef __MARKERS__
 #define __MARKERS__
 
-byte markers[] = {"""
+const byte markers[] = {"""
 
     folder = sys.argv[1]
     ld = os.listdir(folder)
