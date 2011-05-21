@@ -38,6 +38,10 @@
 
 #define OLED_CIRCLE                     0x43
 
+#define OLED_TRIANGLE                   0x47
+
+#define OLED_POLYGON                    0x67
+
 #define OLED_CIRCLEFILL                 0x69
 
 #define OLED_PUTPIXEL                   0x50
@@ -273,7 +277,7 @@ void OLED_DrawLine(char x1, char y1, char x2, char y2, int color)
 
 
 
-void OLED_DrawRectangle(char x, char y, char width, char height, char filled, int color)
+void OLED_DrawRectangle(char x, char y, char width, char height, int color)
 
 {
 
@@ -307,13 +311,6 @@ void OLED_DrawRectangle(char x, char y, char width, char height, char filled, in
 
   Serial.print(color & 0xFF, BYTE);        // LSB
 
-  /*
-
-    if (filled == 1) { Serial.print(0x01); }   // Filled
-
-    else { Serial.print(0x00); }               // Outline
-
-    */
 
   OLED_GetResponse();
 
@@ -321,7 +318,7 @@ void OLED_DrawRectangle(char x, char y, char width, char height, char filled, in
 
 
 
-void OLED_DrawCircle(char x, char y, char radius, char filled, int color)
+void OLED_DrawCircle(char x, char y, char radius, int color)
 
 {
 
@@ -349,6 +346,69 @@ void OLED_DrawCircle(char x, char y, char radius, char filled, int color)
 
 
 
+}
+
+
+
+void OLED_DrawTriangle(char x1, char y1, char x2, char y2, char x3, char y3, int color)
+
+{
+  Serial.print(OLED_TRIANGLE, BYTE);
+
+  Serial.print(x1, BYTE);
+  Serial.print(y1, BYTE);
+
+  Serial.print(x2, BYTE);
+  Serial.print(y2, BYTE);
+
+  Serial.print(x3, BYTE);
+  Serial.print(y3, BYTE);
+
+  // Color
+  Serial.print((color >> 8) & 0xFF, BYTE);
+  Serial.print(color & 0xFF, BYTE);
+
+  OLED_GetResponse();
+}
+
+
+
+static void DrawPolygon(int color, byte count, ...)
+
+{
+  va_list vl;
+  byte x, y, i;
+
+  Serial.print(OLED_POLYGON, BYTE);
+  Serial.print(count, BYTE);
+
+  va_start(vl, count);
+
+  for (i = 0; i < count; i++) {
+    x = (byte)va_arg(vl, int);
+    y = (byte)va_arg(vl, int);
+
+    Serial.print(x, BYTE);
+    Serial.print(y, BYTE);
+  }
+
+  va_end(vl);
+
+  // Color
+  Serial.print((color >> 8) & 0xFF, BYTE);
+  Serial.print(color & 0xFF, BYTE);
+
+  OLED_GetResponse();
+}
+
+
+
+void OLED_DrawPolygon(byte x1, byte y1, byte x2, byte y2, byte x3, byte y3,
+                      byte x4, byte y4, byte x5, byte y5,
+                      int color)
+
+{
+  DrawPolygon(color, 5, x1, y1, x2, y2, x3, y3, x4, y4, x5, y5);
 }
 
 
