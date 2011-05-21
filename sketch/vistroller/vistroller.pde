@@ -20,18 +20,22 @@
 #define DEBUG_LED_PIN 13
 #define OLED_WIDTH 160
 #define OLED_HEIGHT 128
-#define MARKER_PIXEL 26
+#define MARKER_PIXEL_COUNT 26
 // marker size = 2 + 1 + 1 + 2 * 9 + 1 + 1 + 2
+#define MARKER_SYMBOL_COUNT 10
 
-// forward declaration
+// Forward declaration
 void osdPrintln(const char *str);
 void drawMarker(const byte *marker);
+void drawMarkerSymbol(const int button);
 
-// create PS2 Controller Class
+// Controller related global variables.
 PS2X ps2x;
 int error = 0;
+int button_label_base = 0;
 
-int buttons[] = {
+// Global constants used for controller
+const int buttons[] = {
     PSB_PAD_LEFT, PSB_PAD_RIGHT, PSB_SQUARE, PSB_CROSS,
     PSB_PAD_UP, PSB_PAD_DOWN, PSB_TRIANGLE, PSB_CIRCLE,
     PSB_SELECT, PSB_START,
@@ -39,6 +43,23 @@ int buttons[] = {
     PSB_R1, PSB_R2, PSB_R3
 };
 
+const char *button_labels[] = {
+    "L1", "L2", "L3", "R1", "R2", "R3"
+};
+
+// Global constants used in drawMarker()
+const char marker_pixel_size = min(OLED_WIDTH, OLED_HEIGHT) / MARKER_PIXEL_COUNT;
+const char marker_size = marker_pixel_size * MARKER_PIXEL_COUNT;
+const char marker_x_offset = (OLED_WIDTH - marker_size) >> 1;
+const char marker_y_offset = (OLED_HEIGHT - marker_size) >> 1;
+const int marker_id_colors[] = {0x0000, 0xFFFF};
+
+// Global constants used in drawMarkerSymbol()
+const char symbol_size = marker_pixel_size * MARKER_SYMBOL_COUNT;
+const char symbol_x_offset = marker_x_offset + ((marker_size - symbol_size) >> 1);
+const char symbol_y_offset = marker_y_offset + ((marker_size - symbol_size) >> 1);
+
+//
 void setup() {
     // Initialize LED onboard.
     pinMode(DEBUG_LED_PIN, OUTPUT);
@@ -49,10 +70,20 @@ void setup() {
 
     // OLED
     OLED_Init();
+    OLED_Background(0x4A4A); // rgb(79, 73, 87)
+    OLED_SetTextTrans(0x01); // for debug message
     OLED_Clear();
 
-    // FIXME: not needed.
-    OLED_SetTextTrans(0x01);
+
+
+    // Compute button_label_base
+    for (int i = 0; i < sizeof(buttons) / sizeof(buttons[0]); i++) {
+        if (PSB_L1 == buttons[i]) {
+            button_label_base = i;
+            break;
+        }
+    }
+
 
 
     // PS2 controller
@@ -98,6 +129,7 @@ void loop() {
             continue;
         const byte *marker = &markers[k * 36];
         drawMarker(marker);
+        drawMarkerSymbol(k);
     }
 
     delay(50);
@@ -108,9 +140,189 @@ void osdPrintln(const char *str) {
 }
 
 void drawMarker(const byte *marker) {
-    static int size = min(OLED_WIDTH, OLED_HEIGHT) / MARKER_PIXEL;
+    char t, u, v;
+    int c;
+
+    // Draw solid
+    OLED_PenSize(0);
+
+    // draw white frame
+    c = 0xFFFF; // white
+    t = marker_pixel_size + marker_pixel_size;
+    u = marker_size - t;
+    OLED_DrawRectangle(marker_x_offset + 0, marker_y_offset + 0, u, t, c); // top
+    OLED_DrawRectangle(marker_x_offset + u, marker_y_offset + 0, t, u, c); // right
+    OLED_DrawRectangle(marker_x_offset + t, marker_y_offset + u, u, t, c); // bottom
+    OLED_DrawRectangle(marker_x_offset + 0, marker_y_offset + t, t, u, c); // left
 
     // draw black frame
+    c = 0x0000; //black
+    t = marker_pixel_size + marker_pixel_size;
+    u = marker_size - marker_pixel_size * 5;
+    v = marker_pixel_size;
+    OLED_DrawRectangle(marker_x_offset + t + 0, marker_y_offset + t + 0, u, v, c);
+    OLED_DrawRectangle(marker_x_offset + t + u, marker_y_offset + t + 0, v, u, c);
+    OLED_DrawRectangle(marker_x_offset + t + v, marker_y_offset + t + u, u, v, c);
+    OLED_DrawRectangle(marker_x_offset + t + 0, marker_y_offset + t + v, v, u, c);
+
     // draw ID
-    // draw other?
+    t = marker_x_offset + marker_pixel_size * 4;
+    u = marker_y_offset + marker_pixel_size * 3;
+    v = 0;
+    for (; v < 9; v++) {
+      OLED_DrawRectangle(t, u, marker_pixel_size, marker_pixel_size, marker_id_colors[marker[v]]);
+      t += marker_pixel_size + marker_pixel_size;
+    }
+    t = marker_x_offset + marker_size - marker_pixel_size * 4;
+    u = marker_y_offset + marker_pixel_size * 4;
+    for (; v < 18; v++) {
+      OLED_DrawRectangle(t, u, marker_pixel_size, marker_pixel_size, marker_id_colors[marker[v]]);
+      u += marker_pixel_size + marker_pixel_size;
+    }
+    t = marker_x_offset + marker_pixel_size * 5;
+    u = marker_y_offset + marker_size - marker_pixel_size * 4;
+    for (; v < 27; v++) {
+      OLED_DrawRectangle(t, u, marker_pixel_size, marker_pixel_size, marker_id_colors[marker[v]]);
+      t += marker_pixel_size + marker_pixel_size;
+    }
+    t = marker_x_offset + marker_pixel_size * 3;
+    u = marker_y_offset + marker_pixel_size * 5;
+    for (; v < 36; v++) {
+      OLED_DrawRectangle(t, u, marker_pixel_size, marker_pixel_size, marker_id_colors[marker[v]]);
+      u += marker_pixel_size + marker_pixel_size;
+    }
+}
+
+void drawMarkerSymbol(const int index) {
+    const int button = buttons[index];
+    char t, u, v;
+    int c;
+
+    // Draw wire frame
+    OLED_PenSize(1);
+
+    switch (button) {
+    case PSB_PAD_UP:
+        c = 0x0000;
+        t = symbol_size >> 1;
+        u = symbol_size >> 2;
+        OLED_DrawPolygon(symbol_x_offset + t, symbol_y_offset,
+                         symbol_x_offset + u, symbol_y_offset + t,
+                         symbol_x_offset + u, symbol_y_offset + symbol_size,
+                         symbol_x_offset + t + u, symbol_y_offset + symbol_size,
+                         symbol_x_offset + t + u, symbol_y_offset + t,
+                         c);
+        break;
+
+    case PSB_PAD_RIGHT:
+        c = 0x0000;
+        t = symbol_size >> 1;
+        u = symbol_size >> 2;
+        OLED_DrawPolygon(symbol_x_offset, symbol_y_offset + u,
+                         symbol_x_offset, symbol_y_offset + t + u,
+                         symbol_x_offset + t, symbol_y_offset + t + u,
+                         symbol_x_offset + symbol_size, symbol_y_offset + t,
+                         symbol_x_offset + t, symbol_y_offset + u,
+                         c);
+        break;
+
+    case PSB_PAD_DOWN:
+        c = 0x0000;
+        t = symbol_size >> 1;
+        u = symbol_size >> 2;
+        OLED_DrawPolygon(symbol_x_offset + u, symbol_y_offset,
+                         symbol_x_offset + u, symbol_y_offset + t,
+                         symbol_x_offset + t, symbol_y_offset + symbol_size,
+                         symbol_x_offset + t + u, symbol_y_offset + t,
+                         symbol_x_offset + t + u, symbol_y_offset,
+                         c);
+        break;
+
+    case PSB_PAD_LEFT:
+        c = 0x0000;
+        t = symbol_size >> 1;
+        u = symbol_size >> 2;
+        OLED_DrawPolygon(symbol_x_offset, symbol_y_offset + t,
+                         symbol_x_offset + t, symbol_y_offset + t + u,
+                         symbol_x_offset + symbol_size, symbol_y_offset + t + u,
+                         symbol_x_offset + symbol_size, symbol_y_offset + u,
+                         symbol_x_offset + t, symbol_y_offset + u,
+                         c);
+        break;
+
+    case PSB_TRIANGLE:
+        c = 0x8679; // green rgb(135, 205, 205)
+        t = symbol_size >> 1;
+        u = symbol_size >> 2;
+        v = (char)(((int)symbol_size * 113512) >> 18); // symbol_size * 3^0.5 / 4
+        OLED_DrawTriangle(symbol_x_offset + t, symbol_y_offset,
+                          symbol_x_offset + t - v, symbol_y_offset + t + u,
+                          symbol_x_offset + t + v, symbol_y_offset + t + u,
+                          c);
+        break;
+
+    case PSB_CIRCLE:
+        c = 0xE576; // red rgb(229, 174, 180)
+        t = symbol_size >> 1;
+        OLED_DrawTriangle(symbol_x_offset + t, symbol_y_offset,
+                          symbol_x_offset + t - v, symbol_y_offset + t + u,
+                          symbol_x_offset + t + v, symbol_y_offset + t + u,
+                          c);
+        OLED_DrawCircle(symbol_x_offset + t, symbol_y_offset + t,
+                        t, c);
+        break;
+
+    case PSB_CROSS:
+        c = 0xC6DF; // blue rgb(194, 217, 248)
+        t = symbol_size >> 1;
+        OLED_DrawTriangle(symbol_x_offset + t, symbol_y_offset,
+                          symbol_x_offset + t - v, symbol_y_offset + t + u,
+                          symbol_x_offset + t + v, symbol_y_offset + t + u,
+                          c);
+        OLED_DrawCircle(symbol_x_offset + t, symbol_y_offset + t,
+                        t, c);
+        break;
+
+    case PSB_SQUARE:
+        c = 0xFF1E; // pink rgb(250, 225, 244)
+        t = symbol_size >> 1;
+        u = symbol_size * 46341 >> 17; // symbol_size / 2 / 2^0.5
+        OLED_DrawRectangle(symbol_x_offset + t - u, symbol_y_offset + t - u,
+                           t, t, c);
+        break;
+
+    case PSB_SELECT:
+        c = 0x0000;
+        t = symbol_size >> 1;
+        u = symbol_size >> 2;
+        v = symbol_size >> 3;
+        OLED_DrawRectangle(symbol_x_offset + u, symbol_y_offset + t - v,
+                           t, u, c);
+        break;
+
+    case PSB_START:
+        c = 0x0000;
+        t = symbol_size >> 1;
+        u = symbol_size >> 2;
+        v = symbol_size >> 3;
+        OLED_DrawTriangle(symbol_x_offset + u, symbol_y_offset + t - v,
+                          symbol_x_offset + u, symbol_y_offset + t + v,
+                          symbol_x_offset + t + u, symbol_y_offset + t,
+                          c);
+        break;
+
+    case PSB_L1:
+    case PSB_L2:
+    case PSB_L3:
+    case PSB_R1:
+    case PSB_R2:
+    case PSB_R3:
+        c = 0x0000;
+        t = index - button_label_base;
+        OLED_DrawText(7, 4, 2, button_labels[t], 0x0000);
+        break;
+
+    default:
+        break;
+    }
 }
