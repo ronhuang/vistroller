@@ -198,6 +198,11 @@ void drawMarkerSymbol(const int index) {
     char t, u, v;
     int c;
 
+    // Background
+    OLED_PenSize(0);
+    c = 0x4A4A; // rgb(79, 73, 87)
+    OLED_DrawRectangle(symbol_x_offset, symbol_y_offset, symbol_size + 1, symbol_size + 1, c);
+
     // Draw wire frame
     OLED_PenSize(1);
 
@@ -264,10 +269,6 @@ void drawMarkerSymbol(const int index) {
     case PSB_CIRCLE:
         c = 0xE576; // red rgb(229, 174, 180)
         t = symbol_size >> 1;
-        OLED_DrawTriangle(symbol_x_offset + t, symbol_y_offset,
-                          symbol_x_offset + t - v, symbol_y_offset + t + u,
-                          symbol_x_offset + t + v, symbol_y_offset + t + u,
-                          c);
         OLED_DrawCircle(symbol_x_offset + t, symbol_y_offset + t,
                         t, c);
         break;
@@ -275,12 +276,13 @@ void drawMarkerSymbol(const int index) {
     case PSB_CROSS:
         c = 0xC6DF; // blue rgb(194, 217, 248)
         t = symbol_size >> 1;
-        OLED_DrawTriangle(symbol_x_offset + t, symbol_y_offset,
-                          symbol_x_offset + t - v, symbol_y_offset + t + u,
-                          symbol_x_offset + t + v, symbol_y_offset + t + u,
-                          c);
-        OLED_DrawCircle(symbol_x_offset + t, symbol_y_offset + t,
-                        t, c);
+        u = symbol_size * 46341 >> 17; // symbol_size / 2 / 2^0.5
+        OLED_DrawLine(symbol_x_offset + t - u, symbol_y_offset + t - u,
+                      symbol_x_offset + t + u, symbol_y_offset + t + u,
+                      c);
+        OLED_DrawLine(symbol_x_offset + t + u, symbol_y_offset + t - u,
+                      symbol_x_offset + t - u, symbol_y_offset + t + u,
+                      c);
         break;
 
     case PSB_SQUARE:
@@ -288,7 +290,7 @@ void drawMarkerSymbol(const int index) {
         t = symbol_size >> 1;
         u = symbol_size * 46341 >> 17; // symbol_size / 2 / 2^0.5
         OLED_DrawRectangle(symbol_x_offset + t - u, symbol_y_offset + t - u,
-                           t, t, c);
+                           u + u, u + u, c);
         break;
 
     case PSB_SELECT:
@@ -319,7 +321,7 @@ void drawMarkerSymbol(const int index) {
     case PSB_R3:
         c = 0x0000;
         t = index - button_label_base;
-        OLED_DrawText(7, 4, 2, button_labels[t], 0x0000);
+        OLED_DrawText(9, 5, 2, button_labels[t], 0x0000);
         break;
 
     default:
