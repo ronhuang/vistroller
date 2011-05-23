@@ -34,7 +34,7 @@ public class MainView extends View {
     private String mShowOnScreen;
 
     private static final String[] mButtonLabels = {
-        "Left", "Right", "Square", "Crose",
+        "Left", "Right", "Square", "Cross",
         "Up", "Down", "Triangle", "Circle",
         "Select", "Start",
         "L1", "L2", "L3",
@@ -155,6 +155,14 @@ public class MainView extends View {
         mCount++;
 
         invalidate();
+
+        return false;
+    }
+
+
+    @Override
+    public boolean onKeyUp(int keyCode, KeyEvent event) {
+        Log.d(TAG, "MainView::onKeyUp: " + keyCode);
 
         return false;
     }
