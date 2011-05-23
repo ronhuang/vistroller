@@ -20,7 +20,7 @@ import Image
 
 
 def usage():
-    print "python %s <folder containing framemarkers>" % (os.path.basename(sys.argv[0]))
+    print "python %s <folder containing framemarkers> [count]" % (os.path.basename(sys.argv[0]))
 
 
 def dump(fullname):
@@ -51,6 +51,12 @@ def main():
         usage()
         return
 
+    count = 512
+    try:
+        count = int(sys.argv[2])
+    except IndexError, e:
+        pass
+
     print """#ifndef __MARKERS__
 #define __MARKERS__
 
@@ -60,19 +66,17 @@ const byte markers[] = {"""
     ld = os.listdir(folder)
     ld.sort()
     for basename in ld:
+        if count <= 0:
+            break
         fullname = os.path.join(folder, basename)
         dump(fullname)
+        count = count - 1
 
     print """    /* end */
     0
 };
 
 #endif /* __MARKERS__ */"""
-
-
-def main2():
-    for i in range(9):
-        print i
 
 
 if __name__ == '__main__':
