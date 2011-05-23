@@ -299,9 +299,9 @@ void OLED_DrawRectangle(char x, char y, char width, char height, int color)
 
 
 
-  Serial.print(x+width, BYTE);     // x2
+  Serial.print(x+width-1, BYTE);     // x2
 
-  Serial.print(y+height, BYTE);        // y1
+  Serial.print(y+height-1, BYTE);        // y1
 
 
 
