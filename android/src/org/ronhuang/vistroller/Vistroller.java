@@ -325,7 +325,11 @@ public class Vistroller
 
 
         private void injectKey(short id, int action, int count) {
-            int keycode = mIdToCodeMap.get(id);
+            Integer keycode = mIdToCodeMap.get(id);
+
+            if (null == keycode)
+                // No corresponding keycode
+                return;
 
             long eventTime = SystemClock.uptimeMillis();
             long downTime = eventTime; //FIXME: should be in C?
@@ -333,7 +337,7 @@ public class Vistroller
             KeyEvent event = new KeyEvent(downTime,
                                           eventTime,
                                           action,
-                                          keycode,
+                                          keycode.intValue(),
                                           count);
             mWindowManager.injectKeyEvent(event, true);
         }
