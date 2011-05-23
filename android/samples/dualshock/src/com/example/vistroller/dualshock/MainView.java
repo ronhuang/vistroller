@@ -150,9 +150,9 @@ public class MainView extends View {
         Log.d(TAG, "MainView::onKeyDown: " + keyCode);
 
         mShowOnScreen = String.format("[%s] %s",
-                                      mSpinLabels[count % mSpinLabels.length],
+                                      mSpinLabels[mCount % mSpinLabels.length],
                                       getButtonLabel(keyCode));
-        count++;
+        mCount++;
 
         invalidate();
 
