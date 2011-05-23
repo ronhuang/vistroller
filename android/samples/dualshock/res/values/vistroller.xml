@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <array name="vistroller_mapping">
+    <item>@array/vistroller_mapping_0</item>
+    <item>@array/vistroller_mapping_1</item>
+    <item>@array/vistroller_mapping_2</item>
+    <item>@array/vistroller_mapping_3</item>
+    <item>@array/vistroller_mapping_4</item>
+    <item>@array/vistroller_mapping_5</item>
+    <item>@array/vistroller_mapping_6</item>
+    <item>@array/vistroller_mapping_7</item>
+    <item>@array/vistroller_mapping_8</item>
+    <item>@array/vistroller_mapping_9</item>
+    <item>@array/vistroller_mapping_10</item>
+    <item>@array/vistroller_mapping_11</item>
+    <item>@array/vistroller_mapping_12</item>
+    <item>@array/vistroller_mapping_13</item>
+    <item>@array/vistroller_mapping_14</item>
+    <item>@array/vistroller_mapping_15</item>
+  </array>
+
+  <string-array name="vistroller_mapping_0">
+    <item>0</item>
+    <item>KEYCODE_A</item>
+  </string-array>
+
+  <string-array name="vistroller_mapping_1">
+    <item>1</item>
+    <item>KEYCODE_B</item>
+  </string-array>
+
+  <string-array name="vistroller_mapping_2">
+    <item>2</item>
+    <item>KEYCODE_C</item>
+  </string-array>
+
+  <string-array name="vistroller_mapping_3">
+    <item>3</item>
+    <item>KEYCODE_D</item>
+  </string-array>
+
+  <string-array name="vistroller_mapping_4">
+    <item>4</item>
+    <item>KEYCODE_E</item>
+  </string-array>
+
+  <string-array name="vistroller_mapping_5">
+    <item>5</item>
+    <item>KEYCODE_F</item>
+  </string-array>
+
+  <string-array name="vistroller_mapping_6">
+    <item>6</item>
+    <item>KEYCODE_G</item>
+  </string-array>
+
+  <string-array name="vistroller_mapping_7">
+    <item>7</item>
+    <item>KEYCODE_H</item>
+  </string-array>
+
+  <string-array name="vistroller_mapping_8">
+    <item>8</item>
+    <item>KEYCODE_I</item>
+  </string-array>
+
+  <string-array name="vistroller_mapping_9">
+    <item>9</item>
+    <item>KEYCODE_J</item>
+  </string-array>
+
+  <string-array name="vistroller_mapping_10">
+    <item>10</item>
+    <item>KEYCODE_K</item>
+  </string-array>
+
+  <string-array name="vistroller_mapping_11">
+    <item>11</item>
+    <item>KEYCODE_L</item>
+  </string-array>
+
+  <string-array name="vistroller_mapping_12">
+    <item>12</item>
+    <item>KEYCODE_M</item>
+  </string-array>
+
+  <string-array name="vistroller_mapping_13">
+    <item>13</item>
+    <item>KEYCODE_N</item>
+  </string-array>
+
+  <string-array name="vistroller_mapping_14">
+    <item>14</item>
+    <item>KEYCODE_O</item>
+  </string-array>
+
+  <string-array name="vistroller_mapping_15">
+    <item>15</item>
+    <item>KEYCODE_P</item>
+  </string-array>
+</resources>

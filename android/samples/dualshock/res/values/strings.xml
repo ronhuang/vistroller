@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">DualShock</string>
+    <string name="app_description">Read DualShock key event from Vistroller and show on screen</string>
+</resources>

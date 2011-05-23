@@ -18,6 +18,12 @@
 ^android/samples/readkey/obj/
 ^android/samples/readkey/local\.properties
 ^android/samples/readkey/\.ant-targets-build\.xml
+^android/samples/dualshock/bin/
+^android/samples/dualshock/gen/
+^android/samples/dualshock/libs/
+^android/samples/dualshock/obj/
+^android/samples/dualshock/local\.properties
+^android/samples/dualshock/\.ant-targets-build\.xml
 
 ^shield/.*\.sym~
 ^shield/.*\.cmd
